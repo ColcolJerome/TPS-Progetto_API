@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Battle DS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- ===== HEADER ===== -->
+    <header id="game-header">
+        <h1 class="game-title">POKEMON BATTLE</h1>
+        <div class="coin-display">
+            <span id="coin-counter">500</span>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTAINER ===== -->
+    <main class="main-container">
+        
+        <!-- ===== PAGE: MENU ===== -->
+        <section id="page-menu" class="page">
+            <div class="ds-frame">
+                <div class="ds-screen">
+                    <h2 class="menu-title">POKEMON<br>BATTLE DS</h2>
+                    <p class="menu-subtitle">SIMULATORE DI BATTAGLIE</p>
+                    
+                    <div class="pokeball-decoration"></div>
+                    
+                    <div class="menu-buttons">
+                        <button class="btn-ds btn-blue" onclick="showPage('inventory')">
+                            INVENTARIO
+                        </button>
+                        <button class="btn-ds btn-yellow" onclick="showPage('shop')">
+                            NEGOZIO
+                        </button>
+                        <button class="btn-ds btn-red" onclick="showPage('battle')">
+                            BATTAGLIA!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PAGE: INVENTORY ===== -->
+        <section id="page-inventory" class="page hidden">
+            <div class="ds-frame">
+                <div class="ds-screen">
+                    <h2 class="section-title">INVENTARIO</h2>
+                    
+                    <!-- Active Team Section -->
+                    <div class="active-team-section">
+                        <h3 class="active-team-title">TEAM ATTIVO</h3>
+                        <div id="active-team">
+                            <div class="team-slot" data-slot="0">
+                                <span>SLOT 1</span>
+                                <span>VUOTO</span>
+                            </div>
+                            <div class="team-slot" data-slot="1">
+                                <span>SLOT 2</span>
+                                <span>VUOTO</span>
+                            </div>
+                            <div class="team-slot" data-slot="2">
+                                <span>SLOT 3</span>
+                                <span>VUOTO</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pokemon Grid -->
+                    <div id="pokemon-grid">
+                        <div class="empty-message">
+                            Nessun Pokemon!<br><br>
+                            Vai al negozio per<br>acquistare pacchetti!
+                        </div>
+                    </div>
+                    
+                    <!-- 
+                    ===== TEMPLATE CARD POKEMON =====
+                    <div class="pokemon-card" data-id="1">
+                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" alt="Pikachu">
+                        <p class="poke-name">Pikachu</p>
+                        <span class="poke-type type-electric">Electric</span>
+                        <div class="poke-stats">
+                            <div class="stat">
+                                <span class="stat-label">HP</span>
+                                <span class="stat-value">35</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">ATK</span>
+                                <span class="stat-value">55</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">DEF</span>
+                                <span class="stat-value">40</span>
+                            </div>
+                        </div>
+                        <button class="btn-ds btn-green btn-small btn-select" onclick="selectForBattle(1)">
+                            SELEZIONA
+                        </button>
+                    </div>
+                    -->
+                    
+                    <div class="page-footer">
+                        <button class="btn-ds btn-gray" onclick="showPage('menu')">
+                            TORNA AL MENU
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PAGE: SHOP ===== -->
+        <section id="page-shop" class="page hidden">
+            <div class="ds-frame">
+                <div class="ds-screen">
+                    <h2 class="section-title">NEGOZIO</h2>
+                    
+                    <div class="shop-coins">
+                        Monete disponibili: <span id="shop-coin-display">500</span>
+                    </div>
+                    
+                    <div class="packs-container">
+                        <!-- Pacchetto Base -->
+                        <div class="pack pack-base" onclick="buyPack('base')">
+                            <div class="pack-image"></div>
+                            <h3 class="pack-title">PACCHETTO BASE</h3>
+                            <p class="pack-desc">1 Pokemon comune</p>
+                            <span class="pack-price">100</span>
+                        </div>
+                        
+                        <!-- Pacchetto Leggendario -->
+                        <div class="pack pack-legendary" onclick="buyPack('legendary')">
+                            <div class="pack-image"></div>
+                            <h3 class="pack-title">PACCHETTO LEGGENDARIO</h3>
+                            <p class="pack-desc">1 Pokemon leggendario garantito!</p>
+                            <span class="pack-price">2000</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Last Pokemon Obtained -->
+                    <div id="last-pokemon" class="hidden">
+                        <p class="last-pokemon-title">ULTIMO POKEMON OTTENUTO:</p>
+                        <div id="last-pokemon-content">
+                            <!-- Pokemon card will be inserted here -->
+                        </div>
+                    </div>
+                    
+                    <div class="page-footer">
+                        <button class="btn-ds btn-gray" onclick="showPage('menu')">
+                            TORNA AL MENU
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PAGE: BATTLE ===== -->
+        <section id="page-battle" class="page hidden">
+            <div class="ds-frame">
+                <!-- Top Screen - Battle Arena -->
+                <div id="battle-screen-top">
+                    <div class="battle-bg-element"></div>
+                    
+                    <!-- Enemy Pokemon -->
+                    <div id="enemy-pokemon" class="battle-pokemon enemy">
+                        <img src="" alt="Enemy Pokemon" id="enemy-sprite">
+                        <div class="pokemon-info-battle">
+                            <p class="pokemon-battle-name" id="enemy-name">???</p>
+                            <div class="hp-bar-container">
+                                <div class="hp-bar" id="enemy-hp-bar" style="width: 100%;"></div>
+                            </div>
+                            <p class="hp-text"><span id="enemy-hp-current">???</span> / <span id="enemy-hp-max">???</span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Player Pokemon -->
+                    <div id="player-pokemon" class="battle-pokemon player">
+                        <img src="" alt="Player Pokemon" id="player-sprite">
+                        <div class="pokemon-info-battle">
+                            <p class="pokemon-battle-name" id="player-name">???</p>
+                            <div class="hp-bar-container">
+                                <div class="hp-bar" id="player-hp-bar" style="width: 100%;"></div>
+                            </div>
+                            <p class="hp-text"><span id="player-hp-current">???</span> / <span id="player-hp-max">???</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- DS Hinge -->
+                <div class="ds-hinge">
+                    <div class="hinge-line"></div>
+                </div>
+                
+                <!-- Bottom Screen - Controls -->
+                <div id="battle-screen-bottom">
+                    <!-- Battle Log -->
+                    <div id="battle-log">
+                        <p>Seleziona un Pokemon e inizia la battaglia!</p>
+                    </div>
+                    
+                    <!-- Moves Grid -->
+                    <div class="moves-grid">
+                        <button class="move-btn type-normal" onclick="useMove(0)" id="move-0" disabled>
+                            MOSSA 1
+                        </button>
+                        <button class="move-btn type-normal" onclick="useMove(1)" id="move-1" disabled>
+                            MOSSA 2
+                        </button>
+                        <button class="move-btn type-normal" onclick="useMove(2)" id="move-2" disabled>
+                            MOSSA 3
+                        </button>
+                        <button class="move-btn type-normal" onclick="useMove(3)" id="move-3" disabled>
+                            MOSSA 4
+                        </button>
+                    </div>
+                    
+                    <!-- Battle Actions -->
+                    <div class="battle-actions">
+                        <button class="btn-ds btn-yellow" onclick="switchPokemon()">
+                            CAMBIA
+                        </button>
+                        <button class="btn-ds btn-gray" onclick="flee()">
+                            FUGGI
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="page-footer">
+                    <button class="btn-ds btn-gray btn-small" onclick="showPage('menu')">
+                        TORNA AL MENU
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== PACK REVEAL MODAL ===== -->
+    <div id="pack-reveal" class="hidden">
+        <div class="reveal-animation">
+            <div id="reveal-content">
+                <!-- Revealed Pokemon will be shown here -->
+            </div>
+        </div>
+        <button class="btn-ds btn-green" onclick="closePackReveal()" style="margin-top: 20px;">
+            CONTINUA
+        </button>
+    </div>
+
+    <!-- ===== VICTORY BANNER ===== -->
+    <div id="victory-banner" class="hidden">
+        <div class="victory-content">
+            <h2 class="victory-title">HAI VINTO!</h2>
+            <p class="victory-coins">+100</p>
+            <button class="btn-ds btn-green" onclick="closeVictoryBanner()">
+                CONTINUA
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== DEFEAT BANNER ===== -->
+    <div id="defeat-banner" class="hidden">
+        <div class="defeat-content">
+            <h2 class="defeat-title">HAI PERSO...</h2>
+            <p style="color: #aaa; font-size: 10px; margin-bottom: 20px;">Ritenta la prossima volta!</p>
+            <button class="btn-ds btn-gray" onclick="closeDefeatBanner()">
+                CONTINUA
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== SWITCH POKEMON MODAL ===== -->
+    <div id="switch-modal" class="hidden">
+        <h3 class="switch-title">SCEGLI UN POKEMON</h3>
+        <div class="switch-pokemon-list" id="switch-pokemon-list">
+            <!-- Pokemon options will be inserted here -->
+        </div>
+        <button class="btn-ds btn-gray" onclick="closeSwitchModal()" style="margin-top: 20px;">
+            ANNULLA
+        </button>
+    </div>
+    <script src="functions.js"></script>
+</body>
+</html>
