@@ -3,16 +3,38 @@ TODO:Crea una classe pokemon con nome, livello, vita, tipo, lista di mosse(che c
 */ 
 
 class pokemon {
-    constructor(name, type, level, health, defense, attack, specialAttack, specialDefense, moves) {
+    constructor(name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves) {
         this.name = name;
         this.type = type;
         this.level = level;
+
         this.health = health;
         this.defense = defense;
         this.attack = attack;
         this.specialAttack = specialAttack;
         this.specialDefense = specialDefense;
-        this.moves = moves;
+        this.speed = speed
+
+        this.moves = moves; // [nomi mosse]
+
+        this.maxHP = [ ((2 * health) * Level) / 100 ] + Level + 10;
+        this.currentHP = this.maxHP;
+    }
+
+    isFainted() {
+        return this.currentHP <= 0;
+    }
+
+}
+
+export class moves {
+    constructor(name, priority, power, accuracy, pp, type){
+        this.name = name;
+        this.priority = priority;
+        this.power = power;
+        this.accuracy = accuracy; 
+        this.pp = pp;
+        this.type = type;
     }
 }
 
