@@ -2,11 +2,18 @@
 https://pokeapi.co/api/v2/pokemon/{id_pokemon}
 */
 import pokemon from './pokemon.mjs';
+import moves from './pokemon.mjs';
 
 async function fetchOneRandomPokemon() {
     const PokemonAvalaible = 898;
     let randomNumber = Math.floor(Math.random() * PokemonAvalaible) + 1;
     let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`);
+    let data = await response.json();
+    return data;
+}
+
+async function fetchPokemonMove(moveURL) {
+    let response = await fetch(moveURL);
     let data = await response.json();
     return data;
 }
@@ -18,6 +25,25 @@ async function fetchPackOfPokemon(packSize) {
         pokemonList.push(createPokemonFromAPIData(data));
     }
     return pokemonList;
+}
+
+
+
+async function createMoveFromAPIData(data) {
+    let mosse = [];
+    //Prendo le prime 4 mosse disponibili
+    for (let i = 0; i < 4; i++) {
+        let moveInfo = await fetchPokemonMove(data.moves[i].move.url);
+        mosse.push(new moves(
+            moveInfo.name,
+            moveInfo.priority,
+            moveInfo.power,
+            moveInfo.accuracy,
+            moveInfo.pp,
+            moveInfo.type.name
+        ));
+    }
+    return mosse;
 }
 
 function createPokemonFromAPIData(data) {
@@ -32,7 +58,7 @@ function createPokemonFromAPIData(data) {
     let specialAttack = data.stats.find(s => s.stat.name === 'special-attack').base_stat;
     let specialDefense = data.stats.find(s => s.stat.name === 'special-defense').base_stat;
     let speed = data.stats.find(s => s.stat.name === 'speed').base_stat;
-    let moves = [];
-    data.moves.slice(0, 4).forEach(m => moves.push(m.move.name)); // Prende le prime 4 mosse
+    let moves = createMoveFromAPIData(data);
+   
     return new pokemon(name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves);
 }
