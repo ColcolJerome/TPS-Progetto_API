@@ -18,7 +18,7 @@ async function fetchPokemonMove(moveURL) {
     return data;
 }
 
-async function fetchPackOfPokemon(packSize) {
+export async function fetchPackOfPokemon(packSize) {
     let pokemonList = [];
     for(let i = 0; i < packSize; i++) {
         let data = await fetchOneRandomPokemon();
@@ -47,7 +47,7 @@ async function createMoveFromAPIData(data) {
 }
 
 function createPokemonFromAPIData(data) {
-    const defaultLevel = 50;
+    const defaultLevel = 1;
     let name = data.name;
     let type = [];
     data.types.forEach(t => type.push(t.type.name));
@@ -61,5 +61,5 @@ function createPokemonFromAPIData(data) {
     let moves = createMoveFromAPIData(data);
     let frontSprite = data.sprites.front_default;
     let backSprite = data.sprites.back_default;
-    return new pokemon(name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves, frontSprite, backSprite);
+    return new pokemon(data.id, name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves, frontSprite, backSprite);
 }

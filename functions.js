@@ -1,3 +1,5 @@
+import { fetchPackOfPokemon } from './pullPokemon.mjs';
+import { CreateCard } from './pokemon.mjs';
 // ===== GAME STATE  =====
 
 let gameState = {
@@ -6,6 +8,8 @@ let gameState = {
     activeTeam: [null, null, null],
     currentBattle: null
 };
+
+let packRevealPromise = null;
 
 // ===== INITIALIZATION =====
 
@@ -73,6 +77,16 @@ function spendCoins(amount) {
     // TODO: Se no, ritorna false (mostrare messaggio errore?)
     // amount: number (100 per base, 2000 per legendary)
     // return: boolean
+
+    if(gameState.coins >= amount){
+        gameState.coins -= amount;
+        updateCoinDisplay();
+        return true;
+    } 
+    else{
+        alert("Non hai abbastanza monete!");
+        return false;
+    }
 }
 
 function updateCoinDisplay() {
@@ -90,7 +104,7 @@ function updateCoinDisplay() {
 
 // ===== SHOP =====
 
-function buyPack(packType) {
+async function buyPack(packType) {
     // TODO: Determina costo (base=100, legendary=2000)
     // TODO: Chiama spendCoins() per verificare/sottrarre
     // TODO: Se successo, genera Pokemon random:
@@ -101,6 +115,19 @@ function buyPack(packType) {
     // TODO: Chiama showPackReveal() con dati Pokemon
     // TODO: Aggiorna #last-pokemon
     // packType: 'base' o 'legendary'
+    const packBaseCost = 100;
+    const packLegendaryCost = 2000;
+    if(spendCoins(packType === 'base' ? packBaseCost : packLegendaryCost)){
+        console.log("Pack acquistato: " + packType);
+        let pokemonEstratti = await fetchPackOfPokemon(3);
+        for(let p of pokemonEstratti){
+            gameState.inventory.push(p);
+            await showPackReveal(p);
+            console.log(gameState.inventory);
+        }
+    }
+    
+
 }
 
 function showPackReveal(pokemon) {
@@ -108,11 +135,30 @@ function showPackReveal(pokemon) {
     // TODO: Popola #reveal-content con card Pokemon
     // TODO: Aggiungi animazione di reveal
     // pokemon: oggetto con dati Pokemon (name, sprite, stats, type)
+
+    const packReveal = document.getElementById('pack-reveal');
+    const revealContent = document.getElementById('reveal-content');
+    revealContent.innerHTML = ''; // Pulisce contenuto precedente
+    const pokemonCard = CreateCard(pokemon);
+    revealContent.appendChild(pokemonCard);
+    packReveal.classList.remove('hidden');
+
+    //Rende il packReaveal una Promise per gestire l'attesa della chiusura
+    return new Promise(resolve => { 
+        packRevealPromise = resolve;
+    });
 }
 
 function closePackReveal() {
     // TODO: Nasconde #pack-reveal aggiungendo classe hidden
     // TODO: Aggiorna renderInventory() se necessario
+    const packReveal = document.getElementById('pack-reveal');
+    packReveal.classList.add('hidden');
+
+    if (packRevealPromise) {
+        packRevealPromise();
+        packRevealPromise = null;
+    }
 }
 
 
@@ -261,4 +307,13 @@ function getTypeColor(type) {
     // return: string (es: 'type-fire')
 }
 
+// ===== ESPONE LE FUNZIONI A LIVELLO GLOBALE  =====
+window.showPage = showPage;
+window.buyPack = buyPack;
+window.useMove = useMove;
+window.switchPokemon = switchPokemon;
+window.closePackReveal = closePackReveal;
+window.closeVictoryBanner = closeVictoryBanner;
+window.closeDefeatBanner = closeDefeatBanner;
+window.closeSwitchModal = closeSwitchModal;
 

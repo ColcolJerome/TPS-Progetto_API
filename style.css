@@ -347,7 +347,9 @@ body {
     padding: 10px;
     text-align: center;
     transition: all 0.2s ease;
+    
 }
+
 .pokemon-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -424,6 +426,71 @@ body {
     padding: 8px;
     font-size: 7px;
 }
+
+.pokemon-card-show {
+    background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%);
+    border-radius: 10px;
+    border: 3px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.pokemon-card-show:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}   
+.pokemon-card-show.legendary {
+    border-color: gold;
+    box-shadow: 0 0 15px rgba(255,215,0,0.5);
+    background: linear-gradient(180deg, #fffef0 0%, #fff5cc 100%);
+}
+.pokemon-card-show img {
+    width: 100px;
+    height: 100px;
+    image-rendering: pixelated;
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+}
+.pokemon-card-show .poke-name {
+    font-size: 12px;
+    margin: 10px 0;
+    color: #333;
+    text-transform: uppercase;
+}
+.pokemon-card-show .poke-type {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 8px;
+    color: white;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+.pokemon-card-show .poke-stats {
+    display: flex;
+    justify-content: space-around;
+    font-size: 8px;
+    margin: 10px 0;
+    background: rgba(0,0,0,0.05);
+    padding: 8px;
+    border-radius: 5px;
+}
+.pokemon-card-show .stat {
+    text-align: center;
+}
+.pokemon-card-show .stat-label {
+    color: #666;
+    display: block;
+    margin-bottom: 4px;
+}
+.pokemon-card-show .stat-value {
+    color: var(--pokemon-blue);
+    font-weight: bold;
+}
+
+
 /* ===== SHOP PAGE ===== */
 #page-shop .ds-screen {
     background: linear-gradient(180deg, #ffeedd 0%, #ffddbb 100%);
