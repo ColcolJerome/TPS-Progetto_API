@@ -24,7 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// ===== LOCAL STORAGE (opzionale) =====
+// ===== LOCAL STORAGE =====
+
 function savePageState(pageId){
     localStorage.setItem('page', pageId);
 }
