@@ -15,12 +15,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // TODO: Imposta monete iniziali a 500
     // TODO: Chiama updateCoinDisplay()
     // TODO: Mostra pagina menu
-    showPage('page-menu');
+    if(localStorage.getItem('page')) {
+        showPage(localStorage.getItem('page'));
+    } else {
+        showPage('page-menu');
+    }
     updateCoinDisplay();
 });
 
 
 // ===== LOCAL STORAGE (opzionale) =====
+function savePageState(pageId){
+    localStorage.setItem('page', pageId);
+}
 
 function saveGame() {
     // TODO: Salva gameState in localStorage
@@ -35,6 +42,8 @@ function loadGame() {
 
 function showPage(pageId) {
     // pageId: page-menu, page-inventory, page-shop, page-battle
+    
+    savePageState(pageId);
 
     const pages = document.querySelectorAll('.page');
     pages.forEach(page => {
