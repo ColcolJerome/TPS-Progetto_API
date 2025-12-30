@@ -25,6 +25,8 @@ class pokemon {
         return this.currentHP <= 0;
     }
 
+    
+
 }
 
 export class moves {

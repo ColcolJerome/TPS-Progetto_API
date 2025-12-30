@@ -149,18 +149,29 @@ function renderActiveTeam() {
 
 // ===== BATTLE =====
 
-function startBattle() {
+async function startBattle() {
     // TODO: Verifica che activeTeam abbia almeno 1 Pokemon
+    if (activeTeam[0] != null && !activeTeam[0].isFainted() || activeTeam[1] != null && !activeTeam[1].isFainted() || activeTeam[2] != null && !activeTeam[2].isFainted() ){
+        // TODO: Genera Pokemon nemico random (API o locale)
+        let nemici = [];
+        nemici = await fetchPackOfPokemon(3);
+        // TODO: Inizializza gameState.currentBattle con:
+        //       - playerTeam: copia di activeTeam
+        //       - enemyPokemon: Pokemon generato
+        //       - currentPlayerPokemon: primo del team
+        //       - turno, etc.
+        let copyTeam = activeTeam;
+
+
+        // TODO: Aggiorna UI battaglia (sprites, nomi, HP bars)
+        // TODO: Abilita pulsanti mosse
+        // TODO: Aggiungi messaggio a #battle-log
+    }
     // TODO: Se no, mostra messaggio e redirect a inventory
-    // TODO: Genera Pokemon nemico random (API o locale)
-    // TODO: Inizializza gameState.currentBattle con:
-    //       - playerTeam: copia di activeTeam
-    //       - enemyPokemon: Pokemon generato
-    //       - currentPlayerPokemon: primo del team
-    //       - turno, etc.
-    // TODO: Aggiorna UI battaglia (sprites, nomi, HP bars)
-    // TODO: Abilita pulsanti mosse
-    // TODO: Aggiungi messaggio a #battle-log
+    else {
+        alert("è necessario avere dei pokemon in squadra");
+        showPage("page-inventory");
+    }
 }
 
 function useMove(moveIndex) {
