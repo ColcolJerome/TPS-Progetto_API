@@ -17,7 +17,7 @@ class pokemon {
 
         this.moves = moves; // [nomi mosse]
 
-        this.maxHP = [ ((2 * health) * Level) / 100 ] + Level + 10;
+        this.maxHP = [ ((2 * health) * level) / 100 ] + level + 10;
         this.currentHP = this.maxHP;
     }
 

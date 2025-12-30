@@ -8,16 +8,18 @@ async function fetchOneRandomPokemon() {
     let randomNumber = Math.floor(Math.random() * PokemonAvalaible) + 1;
     let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`);
     let data = await response.json();
-
+    return data;
 }
 
 async function fetchPackOfPokemon(packSize) {
     let pokemonList = [];
     for(let i = 0; i < packSize; i++) {
-        pokemonList.push(await fetchOneRandomPokemon());
+        let data = await fetchOneRandomPokemon();
+        pokemonList.push(createPokemonFromAPIData(data));
     }
-    console.log(pokemonList);
+    return pokemonList;
 }
+
 function createPokemonFromAPIData(data) {
     const defaultLevel = 50;
     let name = data.name;
@@ -34,4 +36,3 @@ function createPokemonFromAPIData(data) {
     data.moves.slice(0, 4).forEach(m => moves.push(m.move.name)); // Prende le prime 4 mosse
     return new pokemon(name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves);
 }
-fetchPackOfPokemon(5);
