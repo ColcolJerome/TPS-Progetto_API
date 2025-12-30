@@ -5,7 +5,7 @@ import pokemon from './pokemon.mjs';
 import moves from './pokemon.mjs';
 
 async function fetchOneRandomPokemon() {
-    const PokemonAvalaible = 898;
+    const PokemonAvalaible = 1025;
     let randomNumber = Math.floor(Math.random() * PokemonAvalaible) + 1;
     let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`);
     let data = await response.json();
@@ -59,6 +59,7 @@ function createPokemonFromAPIData(data) {
     let specialDefense = data.stats.find(s => s.stat.name === 'special-defense').base_stat;
     let speed = data.stats.find(s => s.stat.name === 'speed').base_stat;
     let moves = createMoveFromAPIData(data);
-   
-    return new pokemon(name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves);
+    let frontSprite = data.sprites.front_default;
+    let backSprite = data.sprites.back_default;
+    return new pokemon(name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves, frontSprite, backSprite);
 }
