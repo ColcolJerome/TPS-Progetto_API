@@ -1,4 +1,4 @@
-// ===== GAME STATE (placeholder) =====
+// ===== GAME STATE  =====
 
 let gameState = {
     coins: 500,
@@ -7,28 +7,54 @@ let gameState = {
     currentBattle: null
 };
 
+// ===== INITIALIZATION =====
+
+document.addEventListener('DOMContentLoaded', function() {
+    // TODO: Inizializza gameState con valori default
+    // TODO: Carica dati salvati da localStorage se esistono
+    // TODO: Imposta monete iniziali a 500
+    // TODO: Chiama updateCoinDisplay()
+    // TODO: Mostra pagina menu
+    showPage('page-menu');
+    updateCoinDisplay();
+});
+
+
+// ===== LOCAL STORAGE (opzionale) =====
+
+function saveGame() {
+    // TODO: Salva gameState in localStorage
+}
+
+function loadGame() {
+    // TODO: Carica gameState da localStorage
+    // TODO: Ritorna true se dati trovati, false altrimenti
+}
 
 // ===== NAVIGATION =====
 
 function showPage(pageId) {
-    // TODO: Nasconde tutte le pagine (page-menu, page-inventory, page-shop, page-battle)
-    // TODO: Rimuove classe 'hidden' dalla pagina selezionata
-    // TODO: Aggiorna display monete nel negozio se necessario
-    // pageId: 'menu', 'inventory', 'shop', 'battle'
-}
+    // pageId: page-menu, page-inventory, page-shop, page-battle
 
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => {
+        page.classList.add('hidden');
+    });
+
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.remove('hidden');
+
+        // Scroll a inizio pagina
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
 
 // ===== COIN MANAGEMENT =====
 
-function getCoins() {
-    // TODO: Ritorna il numero di monete attuali da gameState.coins
-    // return: number
-}
-
 function addCoins(amount) {
-    // TODO: Aggiunge 'amount' monete a gameState.coins
-    // TODO: Chiama updateCoinDisplay() per aggiornare UI
-    // amount: number (tipicamente 100 per vittoria)
+    gameState.coins += amount;
+    updateCoinDisplay();
 }
 
 function spendCoins(amount) {
@@ -40,8 +66,15 @@ function spendCoins(amount) {
 }
 
 function updateCoinDisplay() {
-    // TODO: Aggiorna #coin-counter con valore gameState.coins
-    // TODO: Aggiorna #shop-coin-display se visibile
+    const coinCounter = document.getElementById('coin-counter');
+    const shopCoinDisplay = document.getElementById('shop-coin-display');
+
+    if (shopCoinDisplay) {
+        shopCoinDisplay.textContent = gameState.coins;
+    }
+    if (coinCounter) {
+        coinCounter.textContent = gameState.coins;
+    }
 }
 
 
@@ -219,25 +252,3 @@ function getTypeColor(type) {
 }
 
 
-// ===== INITIALIZATION =====
-
-document.addEventListener('DOMContentLoaded', function() {
-    // TODO: Inizializza gameState con valori default
-    // TODO: Carica dati salvati da localStorage se esistono
-    // TODO: Imposta monete iniziali a 500
-    // TODO: Chiama updateCoinDisplay()
-    // TODO: Mostra pagina menu
-    showPage('menu');
-});
-
-
-// ===== LOCAL STORAGE (opzionale) =====
-
-function saveGame() {
-    // TODO: Salva gameState in localStorage
-}
-
-function loadGame() {
-    // TODO: Carica gameState da localStorage
-    // TODO: Ritorna true se dati trovati, false altrimenti
-}

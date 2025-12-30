@@ -14,7 +14,7 @@
     <header id="game-header">
         <h1 class="game-title">POKEMON BATTLE</h1>
         <div class="coin-display">
-            <span id="coin-counter">500</span>
+            <span id="coin-counter"></span>
         </div>
     </header>
 
@@ -31,13 +31,13 @@
                     <div class="pokeball-decoration"></div>
                     
                     <div class="menu-buttons">
-                        <button class="btn-ds btn-blue" onclick="showPage('inventory')">
+                        <button class="btn-ds btn-blue" onclick="showPage('page-inventory')">
                             INVENTARIO
                         </button>
-                        <button class="btn-ds btn-yellow" onclick="showPage('shop')">
+                        <button class="btn-ds btn-yellow" onclick="showPage('page-shop')">
                             NEGOZIO
                         </button>
-                        <button class="btn-ds btn-red" onclick="showPage('battle')">
+                        <button class="btn-ds btn-red" onclick="showPage('page-battle')">
                             BATTAGLIA!
                         </button>
                     </div>
@@ -105,7 +105,7 @@
                     -->
                     
                     <div class="page-footer">
-                        <button class="btn-ds btn-gray" onclick="showPage('menu')">
+                        <button class="btn-ds btn-gray" onclick="showPage('page-menu')">
                             TORNA AL MENU
                         </button>
                     </div>
@@ -120,7 +120,7 @@
                     <h2 class="section-title">NEGOZIO</h2>
                     
                     <div class="shop-coins">
-                        Monete disponibili: <span id="shop-coin-display">500</span>
+                        Monete disponibili: <span id="shop-coin-display"></span>
                     </div>
                     
                     <div class="packs-container">
@@ -150,7 +150,7 @@
                     </div>
                     
                     <div class="page-footer">
-                        <button class="btn-ds btn-gray" onclick="showPage('menu')">
+                        <button class="btn-ds btn-gray" onclick="showPage('page-menu')">
                             TORNA AL MENU
                         </button>
                     </div>
@@ -223,14 +223,11 @@
                         <button class="btn-ds btn-yellow" onclick="switchPokemon()">
                             CAMBIA
                         </button>
-                        <button class="btn-ds btn-gray" onclick="flee()">
-                            FUGGI
-                        </button>
                     </div>
                 </div>
                 
                 <div class="page-footer">
-                    <button class="btn-ds btn-gray btn-small" onclick="showPage('menu')">
+                    <button class="btn-ds btn-gray btn-small" onclick="showPage('page-menu')">
                         TORNA AL MENU
                     </button>
                 </div>
