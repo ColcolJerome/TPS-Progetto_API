@@ -152,7 +152,7 @@ function renderActiveTeam() {
 
 async function startBattle() {
     // TODO: Verifica che activeTeam abbia almeno 1 Pokemon
-    if (activeTeam[0] != null && !activeTeam[0].isFainted() || activeTeam[1] != null && !activeTeam[1].isFainted() || activeTeam[2] != null && !activeTeam[2].isFainted() ){
+    if ((activeTeam[0] != null && !activeTeam[0].isFainted()) || (activeTeam[1] != null && !activeTeam[1].isFainted()) || (activeTeam[2] != null && !activeTeam[2].isFainted()) ){
         // TODO: Genera Pokemon nemico random (API o locale)
         let nemici = [];
         nemici = await fetchPackOfPokemon(3);
@@ -161,9 +161,14 @@ async function startBattle() {
         //       - enemyPokemon: Pokemon generato
         //       - currentPlayerPokemon: primo del team
         //       - turno, etc.
-        let copyTeam = activeTeam;
-
-
+        let copyTeam = structuredClone(activeTeam) // questa funzioan crea un plain object che differisce dall'oggetto sorgente quindi non potrà usare i metodi della classe ma terrà gli attributi, quindi posso modificare la copia e dimenticarmi di ripristinare il team attivo
+        let activePokemonP = null;
+        for (let i = 0; i < copyTeam.length; i++ ){
+            if (copyTeam[i] != null){
+                activePokemonP = copyTeam[i];
+                break;
+            }
+        }
         // TODO: Aggiorna UI battaglia (sprites, nomi, HP bars)
         // TODO: Abilita pulsanti mosse
         // TODO: Aggiungi messaggio a #battle-log

@@ -29,7 +29,9 @@ class pokemon {
         return this.currentHP <= 0;
     }
 
-    
+    copy(){
+        
+    }
 
 }
 
