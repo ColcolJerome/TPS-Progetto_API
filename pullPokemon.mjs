@@ -46,7 +46,7 @@ async function createMoveFromAPIData(data) {
     return mosse;
 }
 
-function createPokemonFromAPIData(data) {
+async function createPokemonFromAPIData(data) {
     const defaultLevel = 1;
     let name = data.name;
     let type = [];
@@ -58,7 +58,7 @@ function createPokemonFromAPIData(data) {
     let specialAttack = data.stats.find(s => s.stat.name === 'special-attack').base_stat;
     let specialDefense = data.stats.find(s => s.stat.name === 'special-defense').base_stat;
     let speed = data.stats.find(s => s.stat.name === 'speed').base_stat;
-    let moves = createMoveFromAPIData(data);
+    let moves = await createMoveFromAPIData(data);
     let frontSprite = data.sprites.front_default;
     let backSprite = data.sprites.back_default;
     return new pokemon(data.id, name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves, frontSprite, backSprite);
