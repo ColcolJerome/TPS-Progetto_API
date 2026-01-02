@@ -60,7 +60,6 @@ Questo progetto è una ricreazione delle battaglie dei vecchi giochi Pokemon con
 
 ### Costruito con
 
-* [![Claude][Claude]][Claude-url]
 * [![Visual_Studio][Visual_Studio]][Visual_Studio_url]
 * [![FreeCodeCamp][FreeCodeCamp]][FreeCodeCamp-url]
 * [![W3school][W3school]][W3school-url]
@@ -139,7 +138,6 @@ Project Link: [https://github.com/ColcolJerome/TPS-Progetto_API](https://github.
 <!-- ACKNOWLEDGMENTS -->
 ## Riconoscimenti
 
-* [Le cazzo di aziende che costruiscono 35 datacenter al giorno e fanno aumentare il prezzo della ram :) grazie mille, menomale che ci siete voi a generare i video di Stephen Hawking in sedia a rotelle che fai i trick sulle megarampe](https://en.wikipedia.org/wiki/Sam_Altman)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
