@@ -1,5 +1,7 @@
 // ===== GAME STATE  =====
 
+import pokemon from "./pokemon.mjs";
+
 let gameState = {
     coins: 500,
     inventory: [],
@@ -37,6 +39,10 @@ function saveGame() {
 function loadGame() {
     // TODO: Carica gameState da localStorage
     // TODO: Ritorna true se dati trovati, false altrimenti
+}
+
+function saveBattleState(battleState){
+    localStorage.setItem( 'state' ,JSON.stringify(battleState))
 }
 
 // ===== NAVIGATION =====
@@ -170,7 +176,7 @@ async function startBattle() {
         //       - enemyPokemon: Pokemon generato
         //       - currentPlayerPokemon: primo del team
         //       - turno, etc.
-        let copyTeam = structuredClone(activeTeam) // questa funzioan crea un plain object che differisce dall'oggetto sorgente quindi non potrà usare i metodi della classe ma terrà gli attributi, quindi posso modificare la copia e dimenticarmi di ripristinare il team attivo
+        let copyTeam = activeTeam.slice() 
         state['playerTeam'] = copyTeam;
         state['activePokemonCPU'] = enemies[0];
 
@@ -194,31 +200,61 @@ async function startBattle() {
     }
 }
 
-function useMove(moveIndex, cpuIsAttacker = false) {
-    let json = JSON.parse(localStorage.get('json'));
-    let nDamage = null;
 
+function useMove(moveIndex, cpuIsAttacker = false) {
+    let json = JSON.parse(localStorage.get('state'));
+    
+    let nDamage = null;
     let pkmCPU = json.activePokemonCPU;
     let pkmPLA = json.activePokemonPLA
+
     if (cpuIsAttacker){
         nDamage = calculateDMG(pkmCPU, pkmPLA, pkmCPU.moves[moveIndex]);
-        // TODO: Aggiorna HP player e barra
+        addBattleLog(`${pkmCPU.name} ha utilizzato ${pkmCPU.moves[moveIndex].name}`);
         pkmPLA.currentHP -= nDamage; 
-        updateHPBar('player-hp-bar', )
+        updateHPBar('player-hp-bar', pkmPLA.currentHP, pkmPLA.maxHP);
+        if (pkmPLA.isFainted()){
+            let loss = checkWin(json.playerTeam);
+            if (loss){
+                onBattleLose()
+            } else {
+                pkmPLA = json.playerTeam[switchPokemon(json.playerTeam)];
+                json.activePokemonPLA = pkmCPU;
+                saveBattleState(json);
+            }
+        }
+
     }
     else{
-        nDamage = calculateDMG(pkmPLA, pkmCPU, pkmPLA.moves[moveIndex])
-        // TODO: Aggiorna HP nemico e barra
-        pkmPLA.currentHP -= nDamage;
-        updateHPBar('enemy-hp-bar')
+        nDamage = calculateDMG(pkmPLA, pkmCPU, pkmPLA.moves[moveIndex]);
+        addBattleLog(`${pkmPLA.name} ha utilizzato ${pkmPLA.moves[moveIndex].name}`);
+        pkmCPU.currentHP -= nDamage;
+        updateHPBar('enemy-hp-bar', pkmCPU.currentHP, pkmCPU.maxHP);
+        if (pkmCPU.isFainted()){
+            let win = checkWin(json.enemyTeam);
+            if (win){
+                onBattleWin()
+            } else {
+                pkmCPU = json.enemyTeam[switchPokemon(json.enemyTeam, true)];
+                json.activePokemonCPU = pkmCPU;
+                saveBattleState(json);
+            }
+            
+        }
     }
     
-    // TODO: Aggiungi messaggio a #battle-log
     // TODO: Controlla se nemico sconfitto -> prossimo o vittoria
-    // TODO: Turno nemico: calcola e applica danno al giocatore
-    // TODO: Aggiorna HP giocatore e barra
     // TODO: Controlla se giocatore sconfitto -> switch o sconfitta
-    // moveIndex: 0, 1, 2, o 3
+}
+
+function checkWin(attacker){
+    let counter = 0
+    attacker.forEach(pkm => {
+        if (pkm.isFainted()){
+            counter++
+        }
+    });
+    return counter == 3
 }
 
 function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chiesto al chat :)
@@ -267,19 +303,37 @@ function getTypeEffectiveness(){
 }
 
 function updateHPBar(elementId, currentHP, maxHP) {
-    // TODO: Calcola percentuale HP
-    // TODO: Aggiorna width della barra
-    // TODO: Cambia classe per colore (green > 50%, yellow 20-50%, red < 20%)
-    // elementId: 'player-hp-bar' o 'enemy-hp-bar'
+    let percent = (currentHP / maxHP) * 100;
+    let bar = document.getElementById(elementId);
+    bar.style.width = `${percent}`;
+    if (percent < 50 && percent > 20){
+        bar.classList.add('medium');
+    }else if (percent < 20){
+        bar.classList.remove('medium')
+        bar.classList.add('low');
+    }
 }
 
 function addBattleLog(message) {
     // TODO: Aggiungi messaggio a #battle-log
-    // TODO: Scroll automatico in basso
-    // message: string
+    let log = document.getElementById(battle-log);
+    log.innerHTML = ``;
+    let p = document.createElement('p');
+    p.textContent = message;
+    log.appendChild(p);
+    // TODO: Scroll automatico in basso (da capire)
 }
 
-function switchPokemon() {
+function switchPokemon(team, cpuFeinted = false ) {
+
+    if (cpuFeinted){
+        let random = 0;
+        do {
+            random = Math.floor(Math.random() * 3)
+        } while (team[random].isFainted())
+        return random
+    } 
+
     // TODO: Mostra #switch-modal
     // TODO: Popola #switch-pokemon-list con Pokemon disponibili nel team
     // TODO: Escludi Pokemon attuali/sconfitti
@@ -297,15 +351,10 @@ function closeSwitchModal() {
     // TODO: Nasconde #switch-modal
 }
 
-function flee() {
-    // TODO: Conferma fuga
-    // TODO: Termina battaglia senza ricompense
-    // TODO: Torna al menu
-}
-
 function onBattleWin() {
-    // TODO: Mostra #victory-banner
-    // TODO: Chiama addCoins(100)
+    let winPage = document.getElementById('victory-banner');
+    winPage.classList.remove('hidden');
+    addCoins(100);
     // TODO: Aggiungi animazione/suono vittoria
 }
 
@@ -316,7 +365,8 @@ function closeVictoryBanner() {
 }
 
 function onBattleLose() {
-    // TODO: Mostra #defeat-banner
+    let lossPage = document.getElementById('defeat-banner');
+    lossPage.classList.remove('hidden');
     // TODO: Nessuna ricompensa
 }
 
