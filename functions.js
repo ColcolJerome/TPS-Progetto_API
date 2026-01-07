@@ -115,11 +115,12 @@ async function buyPack(packType) {
     // TODO: Chiama showPackReveal() con dati Pokemon
     // TODO: Aggiorna #last-pokemon
     // packType: 'base' o 'legendary'
-    const packBaseCost = 100;
+    const packBaseCost = 250;
     const packLegendaryCost = 2000;
     if(spendCoins(packType === 'base' ? packBaseCost : packLegendaryCost)){
         console.log("Pack acquistato: " + packType);
         let pokemonEstratti = await fetchPackOfPokemon(3);
+        console.log(pokemonEstratti);
         for(let p of pokemonEstratti){
             gameState.inventory.push(p);
             await showPackReveal(p);

@@ -22,7 +22,7 @@ export async function fetchPackOfPokemon(packSize) {
     let pokemonList = [];
     for(let i = 0; i < packSize; i++) {
         let data = await fetchOneRandomPokemon();
-        pokemonList.push(createPokemonFromAPIData(data));
+        pokemonList.push(await createPokemonFromAPIData(data));
     }
     return pokemonList;
 }
@@ -47,7 +47,7 @@ async function createMoveFromAPIData(data) {
 }
 
 async function createPokemonFromAPIData(data) {
-    const defaultLevel = 1;
+    const defaultLevel = 50;
     let name = data.name;
     let type = [];
     data.types.forEach(t => type.push(t.type.name));
