@@ -1,7 +1,7 @@
 /*
 TODO:Crea una classe pokemon con nome, livello, vita, tipo, lista di mosse(che contiene il nome e i danni della mossa).
 */ 
-
+import { removeFromTeam, selectForBattle } from './functions.js';
 class pokemon {
     constructor(id,name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves, frontSprite, backSprite) {
         this.id = id;
@@ -42,8 +42,46 @@ export class moves {
         this.type = type;
     }
 }
+export function CreateMiniCard(pokemon,isEmpty=false,dataSlot=0) {
+    if(!isEmpty){
+    let card = document.createElement('div');
+    card.classList.add('team-slot');
+    card.classList.add('filled');
+    card.setAttribute('data-id', pokemon.id);
 
-export function CreateCard(pokemon, selectForBattle=false) {
+    let img = document.createElement('img');
+    img.src = pokemon.frontSprite;
+    img.alt = pokemon.name;
+
+    let name = document.createElement('p');
+    name.classList.add('slot-name');
+    name.textContent = pokemon.name;
+
+    card.appendChild(img);
+    card.appendChild(name);
+
+    let selectBtn = document.createElement('button');
+    selectBtn.classList.add('remove-btn');
+    selectBtn.textContent = 'RIMUOVI';
+    selectBtn.onclick = () => removeFromTeam(pokemon.id);
+
+    card.appendChild(selectBtn);
+
+    return card;
+    } 
+    else {
+        let emptyCard = document.createElement('div');
+        emptyCard.classList.add('team-slot');
+        let span1 = document.createElement('span');
+        span1.innerText = `SLOT ${dataSlot}`;
+        let span2 = document.createElement('span'); 
+        span2.innerText = 'VUOTO';
+        emptyCard.appendChild(span1);
+        emptyCard.appendChild(span2);
+        return emptyCard;
+    }
+}
+export function CreateCard(pokemon, isForBattle=false) {
     let card = document.createElement('div');
     card.classList.add('pokemon-card-show');
     card.setAttribute('data-id', pokemon.id);
@@ -93,7 +131,7 @@ export function CreateCard(pokemon, selectForBattle=false) {
     });
     
     card.appendChild(stats);
-    if(selectForBattle) {
+    if(isForBattle) {
         let selectBtn = document.createElement('button');
         selectBtn.classList.add('btn-ds', 'btn-green', 'btn-small', 'btn-select');
         selectBtn.textContent = 'SELEZIONA';
