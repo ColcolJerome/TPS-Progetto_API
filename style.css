@@ -226,6 +226,21 @@ body {
     border: 3px solid #227722;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
+.btn-gold {
+    background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+    color: white;
+    border: 4px solid #daa520;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.3);
+    
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    text-transform: uppercase;
+}
 .btn-yellow {
     background: linear-gradient(180deg, #ffee55 0%, #ddaa00 100%);
     color: #333;
@@ -916,4 +931,345 @@ body {
     gap: 15px;
     flex-wrap: wrap;
     justify-content: center;
+}
+
+
+
+
+/* ===== SEZIONE COMPRA MONETE ===== */
+.compra-monete-screen {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    overflow-y: auto;
+}
+
+.gambling-title {
+    font-size: 1.5rem;
+    color: #ffd700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    animation: pulse 1.5s infinite;
+}
+
+.promo-banner {
+    background: linear-gradient(90deg, #ff0000, #ff6600, #ff0000);
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 10px;
+    animation: slideInBounce 1s ease-out;
+}
+
+.promo-text {
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    margin: 0;
+}
+
+.promo-subtext {
+    font-size: 0.7rem;
+    color: #ffff00;
+    margin: 5px 0 0 0;
+    animation: blink 1s infinite;
+}
+
+.gambling-coins {
+    background: rgba(255, 215, 0, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.coin-highlight {
+    color: #ffd700;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.coin-warning {
+    color: #ff4444;
+    font-size: 0.7rem;
+    margin-top: 5px;
+    animation: shake 0.5s infinite;
+}
+
+/* Coin Packs Container */
+.coin-packs-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* Individual Coin Pack */
+.coin-pack {
+    position: relative;
+    background: linear-gradient(135deg, #2d2d44 0%, #1a1a2e 100%);
+    border: 3px solid #444;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.coin-pack:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+}
+
+/* Pack Glow Effects */
+.pack-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 15px;
+    opacity: 0.3;
+    animation: glow 2s infinite;
+}
+
+.pack-glow-intense {
+    background: radial-gradient(circle, rgba(255,215,0,0.4) 0%, transparent 70%);
+    animation: glow 1s infinite;
+}
+
+.pack-glow-gold {
+    background: radial-gradient(circle, rgba(255,215,0,0.5) 0%, transparent 70%);
+}
+
+.pack-glow-rainbow {
+    background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+    background-size: 400% 400%;
+    animation: rainbow 3s infinite;
+}
+
+/* Badges */
+.best-value-badge, .supreme-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #ff0000;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    font-weight: bold;
+    z-index: 10;
+    animation: bounce 1s infinite;
+}
+
+.supreme-badge {
+    background: linear-gradient(90deg, #ff00ff, #00ffff);
+}
+
+/* Coin Icons */
+.coin-icon {
+    font-size: 2rem;
+    display: block;
+    margin: 10px 0;
+}
+
+.coin-icon-big {
+    font-size: 2.5rem;
+}
+
+.coin-icon-huge {
+    font-size: 3rem;
+}
+
+.coin-icon-rainbow {
+    font-size: 3.5rem;
+    animation: rainbow-text 2s infinite;
+}
+
+/* Pack Titles */
+.coin-pack-title {
+    font-size: 1rem;
+    color: #ffd700;
+    margin: 10px 0 5px 0;
+}
+
+.gold-text {
+    background: linear-gradient(90deg, #ffd700, #ffed4e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.supreme-text {
+    background: linear-gradient(90deg, #ff00ff, #00ffff, #ff00ff);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow 2s infinite;
+}
+
+/* Coin Amounts */
+.coin-amount {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    margin: 5px 0;
+}
+
+.coin-bonus {
+    font-size: 0.8rem;
+    color: #00ff00;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.gold-bonus {
+    color: #ffd700;
+    font-size: 0.9rem;
+}
+
+.supreme-bonus {
+    background: linear-gradient(90deg, #ff00ff, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1rem;
+}
+
+/* Prices */
+.coin-pack-price {
+    display: block;
+    font-size: 1.3rem;
+    color: #00ff00;
+    font-weight: bold;
+    margin: 10px 0 5px 0;
+}
+
+.supreme-price {
+    font-size: 1.5rem;
+    color: #ff00ff;
+}
+
+.coin-pack-old-price {
+    display: block;
+    font-size: 0.8rem;
+    color: #888;
+    text-decoration: line-through;
+}
+
+/* Buy Buttons */
+.btn-buy {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.btn-buy-small {
+    background: linear-gradient(180deg, #4CAF50 0%, #2d7a30 100%);
+    color: white;
+}
+
+.btn-buy-medium {
+    background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.btn-buy-large {
+    background: linear-gradient(180deg, #ff6600 0%, #cc5200 100%);
+    color: white;
+}
+
+.btn-buy-supreme {
+    background: linear-gradient(90deg, #ff00ff, #00ffff, #ff00ff);
+    background-size: 200% 200%;
+    color: white;
+    animation: rainbow 2s infinite, pulse 1.5s infinite;
+}
+
+.btn-buy:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+/* Urgency Section */
+.urgency-section {
+    background: rgba(255, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.urgency-text {
+    font-size: 1rem;
+    color: #ffff00;
+    font-weight: bold;
+    margin: 0;
+}
+
+.urgency-subtext {
+    font-size: 0.7rem;
+    color: #ff6666;
+    margin-top: 5px;
+}
+
+/* Testimonials */
+.testimonials {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.testimonial {
+    font-size: 0.6rem;
+    color: #aaa;
+    font-style: italic;
+    margin: 5px 0;
+}
+
+/* Special Button */
+.btn-gold-pulse {
+    animation: pulse 1.5s infinite, glow 2s infinite;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.5; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes glow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes slideInBounce {
+    0% { transform: translateY(-100%); }
+    60% { transform: translateY(10px); }
+    100% { transform: translateY(0); }
 }

@@ -123,8 +123,6 @@ function updateCoinDisplay() {
 // ===== SHOP =====
 
 async function buyPack(packType) {
-    // TODO: Determina costo (base=100, legendary=2000)
-    // TODO: Chiama spendCoins() per verificare/sottrarre
     // TODO: Se successo, genera Pokemon random:
     //       - base: Pokemon comune (ID 1-151 esclusi leggendari)
     //       - legendary: Pokemon leggendario (es: 144,145,146,150,151,etc)
@@ -135,18 +133,44 @@ async function buyPack(packType) {
     // packType: 'base' o 'legendary'
     const packBaseCost = 250;
     const packLegendaryCost = 2000;
-    if(spendCoins(packType === 'base' ? packBaseCost : packLegendaryCost)){
+    const packStarterCost = 1200;
+    switch (packType) {
+        case 'base':
+
+            pullPack(packBaseCost, 1, packType);
+            break;
+
+        case 'legendary':
+            
+            pullPack(packLegendaryCost, 1, packType);
+            break;
+
+        case 'starter':
+
+            pullPack(packStarterCost, 5, packType);
+            break;
+    
+        
+    }
+    saveGame();
+}
+
+
+async function pullPack(cost,numberOfPokemon, packType){
+    let hasMoney = false;
+    hasMoney = spendCoins(cost);
+    if(hasMoney){
         console.log("Pack acquistato: " + packType);
-        let pokemonEstratti = await fetchPackOfPokemon(3);
+        let pokemonEstratti = await fetchPackOfPokemon(numberOfPokemon);
         console.log(pokemonEstratti);
         for(let p of pokemonEstratti){
             gameState.inventory.push(p);
             await showPackReveal(p);
             console.log(gameState.inventory);
         }
-        saveGame();
     }
 }
+
 
 function showPackReveal(pokemon) {
     // TODO: Mostra #pack-reveal rimuovendo classe hidden
@@ -365,6 +389,13 @@ function getTypeColor(type) {
     // return: string (es: 'type-fire')
 }
 
+
+// TODO: Funzione per acquistare monete 
+function buyCoins(packType) {
+    
+}
+
+
 // ===== ESPONE LE FUNZIONI A LIVELLO GLOBALE  =====
 window.showPage = showPage;
 window.buyPack = buyPack;
@@ -374,4 +405,3 @@ window.closePackReveal = closePackReveal;
 window.closeVictoryBanner = closeVictoryBanner;
 window.closeDefeatBanner = closeDefeatBanner;
 window.closeSwitchModal = closeSwitchModal;
-
