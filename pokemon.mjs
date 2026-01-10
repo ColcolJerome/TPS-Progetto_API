@@ -6,7 +6,7 @@ class pokemon {
     constructor(id,name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves, frontSprite, backSprite) {
         this.id = id;
         this.name = name;
-        this.types = types;
+        this.type = type;
         this.level = level;
 
         this.health = health;
