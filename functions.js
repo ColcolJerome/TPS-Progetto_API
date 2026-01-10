@@ -2,6 +2,8 @@ import { fetchPackOfPokemon } from './pullPokemon.mjs';
 import { CreateCard } from './pokemon.mjs';
 // ===== GAME STATE  =====
 
+import pokemon from "./pokemon.mjs";
+
 let gameState = {
     coins: 500,
     inventory: [],
@@ -41,6 +43,10 @@ function saveGame() {
 function loadGame() {
     // TODO: Carica gameState da localStorage
     // TODO: Ritorna true se dati trovati, false altrimenti
+}
+
+function saveBattleState(battleState){
+    localStorage.setItem( 'state' ,JSON.stringify(battleState))
 }
 
 // ===== NAVIGATION =====
@@ -197,46 +203,184 @@ function renderActiveTeam() {
 
 // ===== BATTLE =====
 
-function startBattle() {
-    // TODO: Verifica che activeTeam abbia almeno 1 Pokemon
-    // TODO: Se no, mostra messaggio e redirect a inventory
-    // TODO: Genera Pokemon nemico random (API o locale)
-    // TODO: Inizializza gameState.currentBattle con:
-    //       - playerTeam: copia di activeTeam
-    //       - enemyPokemon: Pokemon generato
-    //       - currentPlayerPokemon: primo del team
-    //       - turno, etc.
-    // TODO: Aggiorna UI battaglia (sprites, nomi, HP bars)
-    // TODO: Abilita pulsanti mosse
-    // TODO: Aggiungi messaggio a #battle-log
+async function startBattle() {
+
+    let state = {
+        'playerTeam' : [],
+        'enemyTeam' : [],
+        'activePokemonPLA' : null,
+        'activePokemonCPU' : null,
+        'isPlayerTurn' : null
+    }
+
+    if ((activeTeam[0] != null && !activeTeam[0].isFainted()) || (activeTeam[1] != null && !activeTeam[1].isFainted()) || (activeTeam[2] != null && !activeTeam[2].isFainted()) ){
+       
+        let enemies = [];
+        enemies = await fetchPackOfPokemon(3);
+        state['enemyTeam'] = enemies;
+        // TODO: Inizializza gameState.currentBattle con:
+        //       - playerTeam: copia di activeTeam
+        //       - enemyPokemon: Pokemon generato
+        //       - currentPlayerPokemon: primo del team
+        //       - turno, etc.
+        let copyTeam = activeTeam.slice() 
+        state['playerTeam'] = copyTeam;
+        state['activePokemonCPU'] = enemies[0];
+
+        
+        let activePokemonPLA = null;
+        for (let i = 0; i < copyTeam.length; i++ ){
+            if (copyTeam[i] != null){
+                state['activePokemonPLA'] = copyTeam[i];
+                break;
+            }
+        }
+
+        // TODO: Aggiorna UI battaglia (sprites, nomi, HP bars)
+        // TODO: Abilita pulsanti mosse
+        // TODO: Aggiungi messaggio a #battle-log
+        
+    }
+    else {
+        alert("è necessario avere dei pokemon in squadra");
+        showPage("page-inventory");
+    }
 }
 
-function useMove(moveIndex) {
-    // TODO: Ottieni mossa selezionata (0-3) del Pokemon attivo
-    // TODO: Calcola danno inflitto al nemico
-    // TODO: Aggiorna HP nemico e barra
-    // TODO: Aggiungi messaggio a #battle-log
+
+function useMove(moveIndex, cpuIsAttacker = false) {
+    let json = JSON.parse(localStorage.get('state'));
+    
+    let nDamage = null;
+    let pkmCPU = json.activePokemonCPU;
+    let pkmPLA = json.activePokemonPLA
+
+    if (cpuIsAttacker){
+        nDamage = calculateDMG(pkmCPU, pkmPLA, pkmCPU.moves[moveIndex]);
+        addBattleLog(`${pkmCPU.name} ha utilizzato ${pkmCPU.moves[moveIndex].name}`);
+        pkmPLA.currentHP -= nDamage; 
+        updateHPBar('player-hp-bar', pkmPLA.currentHP, pkmPLA.maxHP);
+        if (pkmPLA.isFainted()){
+            let loss = checkWin(json.playerTeam);
+            if (loss){
+                onBattleLose()
+            } else {
+                pkmPLA = json.playerTeam[switchPokemon(json.playerTeam)];
+                json.activePokemonPLA = pkmCPU;
+                saveBattleState(json);
+            }
+        }
+
+    }
+    else{
+        nDamage = calculateDMG(pkmPLA, pkmCPU, pkmPLA.moves[moveIndex]);
+        addBattleLog(`${pkmPLA.name} ha utilizzato ${pkmPLA.moves[moveIndex].name}`);
+        pkmCPU.currentHP -= nDamage;
+        updateHPBar('enemy-hp-bar', pkmCPU.currentHP, pkmCPU.maxHP);
+        if (pkmCPU.isFainted()){
+            let win = checkWin(json.enemyTeam);
+            if (win){
+                onBattleWin()
+            } else {
+                pkmCPU = json.enemyTeam[switchPokemon(json.enemyTeam, true)];
+                json.activePokemonCPU = pkmCPU;
+                saveBattleState(json);
+            }
+            
+        }
+    }
+    
     // TODO: Controlla se nemico sconfitto -> prossimo o vittoria
-    // TODO: Turno nemico: calcola e applica danno al giocatore
-    // TODO: Aggiorna HP giocatore e barra
     // TODO: Controlla se giocatore sconfitto -> switch o sconfitta
-    // moveIndex: 0, 1, 2, o 3
+}
+
+function checkWin(attacker){
+    let counter = 0
+    attacker.forEach(pkm => {
+        if (pkm.isFainted()){
+            counter++
+        }
+    });
+    return counter == 3
+}
+
+function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chiesto al chat :)
+    let attackStat = move.category === "physical"
+    ? attacker.attack
+    : attacker.specialAttack;
+
+    let defenseStat = move.category === "special"
+    ? defender.defense
+    : defender.specialDefense;
+
+    let baseDamage = (((2 * attacker.level / 5 + 2) * move.power * attackStat / defenseStat) / 50) + 2;
+
+    // STAB
+    if (attacker.types.includes(move.type)) {
+        baseDamage *= 1.5;
+    }
+
+    // efficacia tipi
+    baseDamage *= getTypeEffectiveness(move.type, defender.types);
+
+    return Math.floor(baseDamage);
+}
+
+function getTypeEffectiveness(){
+    const TYPE_CHART = {
+        normal: { rock: 0.5, ghost: 0, steel: 0.5 },
+        fire: { grass: 2, ice: 2, bug: 2, steel: 2, fire: 0.5, water: 0.5, rock: 0.5, dragon: 0.5 },
+        water: { fire: 2, ground: 2, rock: 2, water: 0.5, grass: 0.5, dragon: 0.5 },
+        electric: { water: 2, flying: 2, electric: 0.5, grass: 0.5, dragon: 0.5, ground: 0 },
+        grass: { water: 2, ground: 2, rock: 2, fire: 0.5, grass: 0.5, poison: 0.5, flying: 0.5, bug: 0.5, dragon: 0.5, steel: 0.5 },
+        ice: { grass: 2, ground: 2, flying: 2, dragon: 2, fire: 0.5, water: 0.5, ice: 0.5, steel: 0.5 },
+        fighting: { normal: 2, ice: 2, rock: 2, dark: 2, steel: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, fairy: 0.5, ghost: 0 },
+        poison: { grass: 2, fairy: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0 },
+        ground: { fire: 2, electric: 2, poison: 2, rock: 2, steel: 2, grass: 0.5, bug: 0.5, flying: 0 },
+        flying: { grass: 2, fighting: 2, bug: 2, electric: 0.5, rock: 0.5, steel: 0.5 },
+        psychic: { fighting: 2, poison: 2, psychic: 0.5, steel: 0.5, dark: 0 },
+        bug: { grass: 2, psychic: 2, dark: 2, fire: 0.5, fighting: 0.5, poison: 0.5, flying: 0.5, ghost: 0.5, steel: 0.5, fairy: 0.5 },
+        rock: { fire: 2, ice: 2, flying: 2, bug: 2, fighting: 0.5, ground: 0.5, steel: 0.5 },
+        ghost: { psychic: 2, ghost: 2, dark: 0.5, normal: 0 },
+        dragon: { dragon: 2, steel: 0.5, fairy: 0 },
+        dark: { psychic: 2, ghost: 2, fighting: 0.5, dark: 0.5, fairy: 0.5 },
+        steel: { ice: 2, rock: 2, fairy: 2, fire: 0.5, water: 0.5, electric: 0.5, steel: 0.5 },
+        fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
+    };
 }
 
 function updateHPBar(elementId, currentHP, maxHP) {
-    // TODO: Calcola percentuale HP
-    // TODO: Aggiorna width della barra
-    // TODO: Cambia classe per colore (green > 50%, yellow 20-50%, red < 20%)
-    // elementId: 'player-hp-bar' o 'enemy-hp-bar'
+    let percent = (currentHP / maxHP) * 100;
+    let bar = document.getElementById(elementId);
+    bar.style.width = `${percent}`;
+    if (percent < 50 && percent > 20){
+        bar.classList.add('medium');
+    }else if (percent < 20){
+        bar.classList.remove('medium')
+        bar.classList.add('low');
+    }
 }
 
 function addBattleLog(message) {
     // TODO: Aggiungi messaggio a #battle-log
-    // TODO: Scroll automatico in basso
-    // message: string
+    let log = document.getElementById(battle-log);
+    log.innerHTML = ``;
+    let p = document.createElement('p');
+    p.textContent = message;
+    log.appendChild(p);
+    // TODO: Scroll automatico in basso (da capire)
 }
 
-function switchPokemon() {
+function switchPokemon(team, cpuFeinted = false ) {
+
+    if (cpuFeinted){
+        let random = 0;
+        do {
+            random = Math.floor(Math.random() * 3)
+        } while (team[random].isFainted())
+        return random
+    } 
+
     // TODO: Mostra #switch-modal
     // TODO: Popola #switch-pokemon-list con Pokemon disponibili nel team
     // TODO: Escludi Pokemon attuali/sconfitti
@@ -254,15 +398,10 @@ function closeSwitchModal() {
     // TODO: Nasconde #switch-modal
 }
 
-function flee() {
-    // TODO: Conferma fuga
-    // TODO: Termina battaglia senza ricompense
-    // TODO: Torna al menu
-}
-
 function onBattleWin() {
-    // TODO: Mostra #victory-banner
-    // TODO: Chiama addCoins(100)
+    let winPage = document.getElementById('victory-banner');
+    winPage.classList.remove('hidden');
+    addCoins(100);
     // TODO: Aggiungi animazione/suono vittoria
 }
 
@@ -273,7 +412,8 @@ function closeVictoryBanner() {
 }
 
 function onBattleLose() {
-    // TODO: Mostra #defeat-banner
+    let lossPage = document.getElementById('defeat-banner');
+    lossPage.classList.remove('hidden');
     // TODO: Nessuna ricompensa
 }
 

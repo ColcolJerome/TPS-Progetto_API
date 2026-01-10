@@ -40,7 +40,8 @@ async function createMoveFromAPIData(data) {
             moveInfo.power,
             moveInfo.accuracy,
             moveInfo.pp,
-            moveInfo.type.name
+            moveInfo.type.name,
+            moveInfo.damage_class
         ));
     }
     return mosse;
