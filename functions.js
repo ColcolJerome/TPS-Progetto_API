@@ -1,5 +1,7 @@
 import { fetchPackOfPokemon } from './pullPokemon.mjs';
 import { CreateCard } from './pokemon.mjs';
+import { CreateMiniCard } from './pokemon.mjs';
+
 // ===== GAME STATE  =====
 
 import pokemon from "./pokemon.mjs";
@@ -7,7 +9,7 @@ import pokemon from "./pokemon.mjs";
 let gameState = {
     coins: 500,
     inventory: [],
-    activeTeam: [null, null, null],
+    activeTeam: [],
     currentBattle: null
 };
 
@@ -21,12 +23,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // TODO: Imposta monete iniziali a 500
     // TODO: Chiama updateCoinDisplay()
     // TODO: Mostra pagina menu
+    if(!loadGame()){
+        saveGame();
+    }
     if(localStorage.getItem('page')) {
         showPage(localStorage.getItem('page'));
     } else {
         showPage('page-menu');
     }
     updateCoinDisplay();
+    
 });
 
 
@@ -38,11 +44,19 @@ function savePageState(pageId){
 
 function saveGame() {
     // TODO: Salva gameState in localStorage
+    localStorage.setItem('gameState', JSON.stringify(gameState));
 }
 
 function loadGame() {
     // TODO: Carica gameState da localStorage
     // TODO: Ritorna true se dati trovati, false altrimenti
+    let savedState = localStorage.getItem('gameState');
+    if(savedState) {
+        gameState = JSON.parse(savedState);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function saveBattleState(battleState){
@@ -63,6 +77,10 @@ function showPage(pageId) {
 
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
+        if(pageId === 'page-inventory') {
+            renderInventory();
+            renderActiveTeam();
+        }
         targetPage.classList.remove('hidden');
 
         // Scroll a inizio pagina
@@ -132,9 +150,8 @@ async function buyPack(packType) {
             await showPackReveal(p);
             console.log(gameState.inventory);
         }
+        saveGame();
     }
-    
-
 }
 
 function showPackReveal(pokemon) {
@@ -157,11 +174,8 @@ function showPackReveal(pokemon) {
 }
 
 function closePackReveal() {
-    // TODO: Nasconde #pack-reveal aggiungendo classe hidden
-    // TODO: Aggiorna renderInventory() se necessario
     const packReveal = document.getElementById('pack-reveal');
     packReveal.classList.add('hidden');
-
     if (packRevealPromise) {
         packRevealPromise();
         packRevealPromise = null;
@@ -177,27 +191,70 @@ function renderInventory() {
     // TODO: Per ogni Pokemon in inventory, crea card HTML
     // TODO: Usa template card commentato come riferimento
     // TODO: Aggiungi classe 'legendary' se Pokemon leggendario
+    const emptyPokemonMessage = document.getElementById('empty-message');
+    if(gameState.inventory.length == 0){
+        emptyPokemonMessage.classList.remove('hidden');
+    }else{
+        emptyPokemonMessage.classList.add('hidden');
+        gameState.inventory.forEach(pokemon => {
+            const pokemonGrid = document.getElementById('pokemon-grid');
+            const pokemonCard = CreateCard(pokemon, true);
+            pokemonGrid.appendChild(pokemonCard);
+        });
+    }
 }
 
-function selectForBattle(pokemonId) {
+export function selectForBattle(pokemonId) {
     // TODO: Trova Pokemon in gameState.inventory per ID
     // TODO: Controlla se team ha slot liberi (max 3)
     // TODO: Se slot libero, aggiungi a gameState.activeTeam
     // TODO: Aggiorna visualizzazione #active-team
     // TODO: Se gia nel team, mostra messaggio errore
     // pokemonId: number/string - ID univoco del Pokemon
+
+    let selectedPokemon = gameState.inventory.find(p => p.id == pokemonId);
+    if(selectedPokemon) {
+        if(gameState.activeTeam.includes(selectedPokemon)) {
+            alert("Pokemon già nel team!");
+        } else {
+            if(gameState.activeTeam.length < 3) {
+                gameState.activeTeam.push(selectedPokemon);
+                renderActiveTeam();
+            } else {
+                alert("Team pieno!");
+            }
+        }
+    } else {
+        alert("Pokemon non trovato nell'inventario!");
+    }
 }
 
-function removeFromTeam(pokemonId) {
+export function removeFromTeam(pokemonId) {
     // TODO: Trova e rimuovi Pokemon da gameState.activeTeam
     // TODO: Aggiorna visualizzazione #active-team
     // pokemonId: number/string
+    gameState.activeTeam = gameState.activeTeam.filter(p => p.id != pokemonId);
+    renderActiveTeam();
 }
 
 function renderActiveTeam() {
     // TODO: Aggiorna i 3 slot in #active-team
     // TODO: Per slot vuoti, mostra placeholder
     // TODO: Per slot pieni, mostra mini-card con pulsante rimuovi
+    const activeTeamContainer = document.getElementById('active-team');
+    activeTeamContainer.innerHTML = ''; 
+    for(let i = 0; i < 3; i++) {
+        if(gameState.activeTeam[i]) {
+            const miniCard = CreateMiniCard(gameState.activeTeam[i]);
+            activeTeamContainer.appendChild(miniCard);
+        }else
+        {
+            const emptySlot = CreateMiniCard(null,true,i+1);
+            activeTeamContainer.appendChild(emptySlot);
+        }
+    }
+    saveGame();
+
 }
 
 
