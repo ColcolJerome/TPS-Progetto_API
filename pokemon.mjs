@@ -26,10 +26,6 @@ class pokemon {
 
     }
 
-    isFainted() {
-        return this.currentHP <= 0;
-    }
-
 }
 
 export class moves {

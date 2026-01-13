@@ -271,7 +271,10 @@ function renderActiveTeam() {
 
 async function startBattle() {
     let json = JSON.parse(localStorage.getItem('gameState'));
-
+    let PLAimg = document.getElementById('player-sprite');
+    let CPUimg = document.getElementById('enemy-sprite');
+    //FIXME: non abbiamo un array pieno
+    
     let state = {
         'playerTeam' : [],
         'enemyTeam' : [],
@@ -279,18 +282,17 @@ async function startBattle() {
         'activePokemonCPU' : null,
         'isPlayerTurn' : null
     }
-
-    if(json.activeTeam.length = 0){
+    
+    if(json.activeTeam.length == 0){
         alert("non hai pokemon in squadra!");
         showPage("page-inventory");
     }
     else{
-        //FIXME: non abbiamo un array pieno
-        console.log(json);
-        alert (json.activeTeam.length);
         //FIXME: controlla se serve la condizione
-        if ((!gameState.activeTeam[0].isFainted()) || (!gameState.activeTeam[1].isFainted()) || (!gameState.activeTeam[2].isFainted()) ){
-           
+        if ((!isFainted(json.activeTeam[0])) || (!isFainted(json.activeTeam[1])) || (!isFainted(json.activeTeam[2])) ){
+        
+
+
             let enemies = [];
             enemies = await fetchPackOfPokemon(3);
             state['enemyTeam'] = enemies;
@@ -299,14 +301,16 @@ async function startBattle() {
             //       - enemyPokemon: Pokemon generato
             //       - currentPlayerPokemon: primo del team
             //       - turno, etc.
-            let copyTeam = gameState.activeTeam.slice()  
+            let copyTeam = json.activeTeam.slice()  
             state['playerTeam'] = copyTeam;
             state['activePokemonCPU'] = enemies[0];
+            CPUimg.src = enemies[0].frontSprite;
     
             
             for (let i = 0; i < copyTeam.length; i++ ){
                 if (copyTeam[i] != null){
                     state['activePokemonPLA'] = copyTeam[i];
+                    PLAimg.src = copyTeam[i].backSprite;
                     break;
                 }
             }
@@ -333,7 +337,7 @@ function useMove(moveIndex, cpuIsAttacker = false) {
         addBattleLog(`${pkmCPU.name} ha utilizzato ${pkmCPU.moves[moveIndex].name}`);
         pkmPLA.currentHP -= nDamage; 
         updateHPBar('player-hp-bar', pkmPLA.currentHP, pkmPLA.maxHP);
-        if (pkmPLA.isFainted()){
+        if (isFainted(pkmPLA)){
             let loss = checkWin(json.playerTeam);
             if (loss){
                 onBattleLose()
@@ -350,7 +354,7 @@ function useMove(moveIndex, cpuIsAttacker = false) {
         addBattleLog(`${pkmPLA.name} ha utilizzato ${pkmPLA.moves[moveIndex].name}`);
         pkmCPU.currentHP -= nDamage;
         updateHPBar('enemy-hp-bar', pkmCPU.currentHP, pkmCPU.maxHP);
-        if (pkmCPU.isFainted()){
+        if (isFainted(pkmCPU)){
             let win = checkWin(json.enemyTeam);
             if (win){
                 onBattleWin()
@@ -367,10 +371,14 @@ function useMove(moveIndex, cpuIsAttacker = false) {
     // TODO: Controlla se giocatore sconfitto -> switch o sconfitta
 }
 
+function isFainted(pokemonObj) {
+    return pokemonObj.currentHP <= 0;
+}
+
 function checkWin(attacker){
     let counter = 0
     attacker.forEach(pkm => {
-        if (pkm.isFainted()){
+        if (isFainted(pkm)){
             counter++
         }
     });
@@ -453,7 +461,7 @@ function switchPokemon(cpuFeinted = false ) {
         let random = 0;
         do {
             random = Math.floor(Math.random() * 6)
-        } while (team[random].isFainted())
+        } while (isFainted(team[random]));
         return random
     } 
     else{
