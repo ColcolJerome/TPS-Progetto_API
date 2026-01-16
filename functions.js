@@ -7,7 +7,7 @@ import { CreateMiniCard } from './pokemon.mjs';
 import pokemon from "./pokemon.mjs";
 
 let gameState = {
-    coins: 500,
+    coins: 25000,
     inventory: [],
     activeTeam: [],
     currentBattle: null
@@ -272,9 +272,7 @@ function renderActiveTeam() {
 async function startBattle() {
     let json = JSON.parse(localStorage.getItem('gameState'));
     let PLAimg = document.getElementById('player-sprite');
-    let CPUimg = document.getElementById('enemy-sprite');
-    //FIXME: non abbiamo un array pieno
-    
+    let CPUimg = document.getElementById('enemy-sprite');    
     let state = {
         'playerTeam' : [],
         'enemyTeam' : [],
@@ -289,12 +287,12 @@ async function startBattle() {
     }
     else{
         //FIXME: controlla se serve la condizione
-        if ((!isFainted(json.activeTeam[0])) || (!isFainted(json.activeTeam[1])) || (!isFainted(json.activeTeam[2])) ){
+        if ((!isFainted(json.activeTeam[0].currentHP)) || (!isFainted(json.activeTeam[1].currentHP)) || (!isFainted(json.activeTeam[2].currentHP)) ){
         
 
 
             let enemies = [];
-            enemies = await fetchPackOfPokemon(3);
+            enemies = await fetchPackOfPokemon(6);
             state['enemyTeam'] = enemies;
             // TODO: Inizializza gameState.currentBattle con:
             //       - playerTeam: copia di activeTeam
@@ -304,26 +302,61 @@ async function startBattle() {
             let copyTeam = json.activeTeam.slice()  
             state['playerTeam'] = copyTeam;
             state['activePokemonCPU'] = enemies[0];
-            CPUimg.src = enemies[0].frontSprite;
+            renderCPU(enemies[0]);
     
             
             for (let i = 0; i < copyTeam.length; i++ ){
                 if (copyTeam[i] != null){
                     state['activePokemonPLA'] = copyTeam[i];
-                    PLAimg.src = copyTeam[i].backSprite;
+                    renderPLA(copyTeam[i]);
                     break;
                 }
             }
     
             saveBattleState(state);
-            // TODO: Aggiorna UI battaglia (sprites, nomi, HP bars)
+            
             // TODO: Abilita pulsanti mosse
             // TODO: Aggiungi messaggio a #battle-log
             
         }
     }
 }
+function renderPLA(pokemon){
+    let PLAimg = document.getElementById('player-sprite');
+    let PLAname = document.getElementById('player-name');
+    let PLAcurrentHP = document.getElementById('player-hp-current');
+    let PLAmaxHP = document.getElementById('player-hp-max');
 
+    PLAname.textContent = pokemon.name;
+    PLAcurrentHP.textContent = pokemon.currentHP;
+    PLAmaxHP.textContent = pokemon.maxHP;
+    PLAimg.src = pokemon.backSprite;
+
+    renderMoveButtons(pokemon);
+}
+function renderMoveButtons(pokemon){
+    document.querySelectorAll('.move-btn').forEach((button, index) => {
+        if(pokemon.moves[index]){
+            console.log(pokemon);
+            button.textContent = pokemon.moves[index].name;
+            button.disabled = false;
+        } else {
+            button.textContent = '---';
+            button.disabled = true;
+        }}
+    );
+}
+function renderCPU(pokemon){
+    let CPUimg = document.getElementById('enemy-sprite');
+    let CPUname = document.getElementById('enemy-name');
+    let CPUcurrentHP = document.getElementById('enemy-hp-current');
+    let CPUmaxHP = document.getElementById('enemy-hp-max');
+
+    CPUname.textContent = pokemon.name;
+    CPUcurrentHP.textContent = pokemon.currentHP;
+    CPUmaxHP.textContent = pokemon.maxHP;
+    CPUimg.src = pokemon.frontSprite;
+}
 
 function useMove(moveIndex, cpuIsAttacker = false) {
     let json = JSON.parse(localStorage.getItem('state'));
@@ -337,48 +370,54 @@ function useMove(moveIndex, cpuIsAttacker = false) {
         addBattleLog(`${pkmCPU.name} ha utilizzato ${pkmCPU.moves[moveIndex].name}`);
         pkmPLA.currentHP -= nDamage; 
         updateHPBar('player-hp-bar', pkmPLA.currentHP, pkmPLA.maxHP);
-        if (isFainted(pkmPLA)){
+        if (isFainted(pkmPLA.currentHP)){
             let loss = checkWin(json.playerTeam);
             if (loss){
                 onBattleLose()
             } else {
                 pkmPLA = json.playerTeam[switchPokemon(json.playerTeam)];
                 json.activePokemonPLA = pkmCPU;
-                saveBattleState(json);
+                renderPLA(pkmPLA);
             }
         }
+        
 
     }
     else{
         nDamage = calculateDMG(pkmPLA, pkmCPU, pkmPLA.moves[moveIndex]);
+        console.log(nDamage);
         addBattleLog(`${pkmPLA.name} ha utilizzato ${pkmPLA.moves[moveIndex].name}`);
         pkmCPU.currentHP -= nDamage;
+        console.log(pkmCPU.currentHP);
         updateHPBar('enemy-hp-bar', pkmCPU.currentHP, pkmCPU.maxHP);
-        if (isFainted(pkmCPU)){
+        if (isFainted(pkmCPU.currentHP)){
             let win = checkWin(json.enemyTeam);
             if (win){
                 onBattleWin()
             } else {
                 pkmCPU = json.enemyTeam[switchPokemon(json.enemyTeam, true)];
                 json.activePokemonCPU = pkmCPU;
-                saveBattleState(json);
+                renderCPU(pkmCPU);
+
             }
             
         }
     }
+    saveBattleState(json);
     
     // TODO: Controlla se nemico sconfitto -> prossimo o vittoria
     // TODO: Controlla se giocatore sconfitto -> switch o sconfitta
 }
 
-function isFainted(pokemonObj) {
-    return pokemonObj.currentHP <= 0;
+function isFainted(hp){
+    console.log(hp);
+    return hp <= 0;
 }
 
 function checkWin(attacker){
     let counter = 0
     attacker.forEach(pkm => {
-        if (isFainted(pkm)){
+        if (isFainted(pkm.currentHP)){
             counter++
         }
     });
@@ -386,57 +425,67 @@ function checkWin(attacker){
 }
 
 function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chiesto al chat :)
-    let attackStat = move.category === "physical"
+    let attackStat = move.category.name === "physical"
     ? attacker.attack
     : attacker.specialAttack;
-
-    let defenseStat = move.category === "special"
+    console.log(attackStat);
+    let defenseStat = move.category.name === "physical"
     ? defender.defense
     : defender.specialDefense;
-
+    console.log(defenseStat);
     let baseDamage = (((2 * attacker.level / 5 + 2) * move.power * attackStat / defenseStat) / 50) + 2;
-
+    console.log(baseDamage);
     // STAB
-    if (attacker.types.includes(move.type)) {
+    if (attacker.type.includes(move.type)) {
         baseDamage *= 1.5;
     }
 
     // efficacia tipi
-    baseDamage *= getTypeEffectiveness(move.type, defender.types);
-
+    baseDamage *= getTypeEffectiveness(move.type, defender.type);
+    console.log(baseDamage);
     return Math.floor(baseDamage);
 }
 
-function getTypeEffectiveness(){ // fatto con il chat :)
+function getTypeEffectiveness(type, defenderType) { // fatto con il chat :)
     const TYPE_CHART = {
-        normal: { rock: 0.5, ghost: 0, steel: 0.5 },
-        fire: { grass: 2, ice: 2, bug: 2, steel: 2, fire: 0.5, water: 0.5, rock: 0.5, dragon: 0.5 },
-        water: { fire: 2, ground: 2, rock: 2, water: 0.5, grass: 0.5, dragon: 0.5 },
-        electric: { water: 2, flying: 2, electric: 0.5, grass: 0.5, dragon: 0.5, ground: 0 },
-        grass: { water: 2, ground: 2, rock: 2, fire: 0.5, grass: 0.5, poison: 0.5, flying: 0.5, bug: 0.5, dragon: 0.5, steel: 0.5 },
-        ice: { grass: 2, ground: 2, flying: 2, dragon: 2, fire: 0.5, water: 0.5, ice: 0.5, steel: 0.5 },
-        fighting: { normal: 2, ice: 2, rock: 2, dark: 2, steel: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, fairy: 0.5, ghost: 0 },
-        poison: { grass: 2, fairy: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0 },
-        ground: { fire: 2, electric: 2, poison: 2, rock: 2, steel: 2, grass: 0.5, bug: 0.5, flying: 0 },
-        flying: { grass: 2, fighting: 2, bug: 2, electric: 0.5, rock: 0.5, steel: 0.5 },
-        psychic: { fighting: 2, poison: 2, psychic: 0.5, steel: 0.5, dark: 0 },
-        bug: { grass: 2, psychic: 2, dark: 2, fire: 0.5, fighting: 0.5, poison: 0.5, flying: 0.5, ghost: 0.5, steel: 0.5, fairy: 0.5 },
-        rock: { fire: 2, ice: 2, flying: 2, bug: 2, fighting: 0.5, ground: 0.5, steel: 0.5 },
-        ghost: { psychic: 2, ghost: 2, dark: 0.5, normal: 0 },
-        dragon: { dragon: 2, steel: 0.5, fairy: 0 },
-        dark: { psychic: 2, ghost: 2, fighting: 0.5, dark: 0.5, fairy: 0.5 },
-        steel: { ice: 2, rock: 2, fairy: 2, fire: 0.5, water: 0.5, electric: 0.5, steel: 0.5 },
-        fairy: { fighting: 2, dragon: 2, dark: 2, fire: 0.5, poison: 0.5, steel: 0.5 }
+        "normal": { "rock": 0.5, "ghost": 0, "steel": 0.5 },
+        "fire": { "grass": 2, "ice": 2, "bug": 2, "steel": 2, "fire": 0.5, "water": 0.5, "rock": 0.5, "dragon": 0.5 },
+        "water": { "fire": 2, "ground": 2, "rock": 2, "water": 0.5, "grass": 0.5, "dragon": 0.5 },
+        "electric": { "water": 2, "flying": 2, "electric": 0.5, "grass": 0.5, "dragon": 0.5, "ground": 0 },
+        "grass": { "water": 2, "ground": 2, "rock": 2, "fire": 0.5, "grass": 0.5, "poison": 0.5, "flying": 0.5, "bug": 0.5, "dragon": 0.5, "steel": 0.5 },
+        "ice": { "grass": 2, "ground": 2, "flying": 2, "dragon": 2, "fire": 0.5, "water": 0.5, "ice": 0.5, "steel": 0.5 },
+        "fighting": { "normal": 2, "ice": 2, "rock": 2, "dark": 2, "steel": 2, "poison": 0.5, "flying": 0.5, "psychic": 0.5, "bug": 0.5, "fairy": 0.5, "ghost": 0 },
+        "poison": { "grass": 2, "fairy": 2, "poison": 0.5, "ground": 0.5, "rock": 0.5, "ghost": 0.5, "steel": 0 },
+        "ground": { "fire": 2, "electric": 2, "poison": 2, "rock": 2, "steel": 2, "grass": 0.5, "bug": 0.5, "flying": 0 },
+        "flying": { "grass": 2, "fighting": 2, "bug": 2, "electric": 0.5, "rock": 0.5, "steel": 0.5 },
+        "psychic": { "fighting": 2, "poison": 2, "psychic": 0.5, "steel": 0.5, "dark": 0 },
+        "bug": { "grass": 2, "psychic": 2, "dark": 2, "fire": 0.5, "fighting": 0.5, "poison": 0.5, "flying": 0.5, "ghost": 0.5, "steel": 0.5, "fairy": 0.5 },
+        "rock": { "fire": 2, "ice": 2, "flying": 2, "bug": 2, "fighting": 0.5, "ground": 0.5, "steel": 0.5 },
+        "ghost": { "psychic": 2, "ghost": 2, "dark": 0.5, "normal": 0 },
+        "dragon": { "dragon": 2, "steel": 0.5, "fairy": 0 },
+        "dark": { "psychic": 2, "ghost": 2, "fighting": 0.5, "dark": 0.5, "fairy": 0.5 },
+        "steel": { "ice": 2, "rock": 2, "fairy": 2, "fire": 0.5, "water": 0.5, "electric": 0.5, "steel": 0.5 },
+        "fairy": { "fighting": 2, "dragon": 2, "dark": 2, "fire": 0.5, "poison": 0.5, "steel": 0.5 }
     };
+    console.log(type);
+    console.log(defenderType);
+    let listDmg = [];
+    for(let i = 0; i < defenderType.length; i++){
+        listDmg.push(TYPE_CHART[type][defenderType[i]] || 1);
+    }
+    return listDmg.reduce((a, b) => a * b, 1);
 }
 
 function updateHPBar(elementId, currentHP, maxHP) {
+    console.log("Updating HP Bar:", elementId, currentHP, maxHP);
     let percent = (currentHP / maxHP) * 100;
     let bar = document.getElementById(elementId);
-    bar.style.width = `${percent}`;
+    bar.style.width = `${percent}%`;
+    bar.classList.remove('medium', 'low');
+    console.log(bar.style.width);
     if (percent < 50 && percent > 20){
         bar.classList.add('medium');
-    }else if (percent < 20){
+    }else if (percent <= 20){
         bar.classList.remove('medium')
         bar.classList.add('low');
     }
@@ -444,7 +493,7 @@ function updateHPBar(elementId, currentHP, maxHP) {
 
 function addBattleLog(message) {
     // TODO: Aggiungi messaggio a #battle-log
-    let log = document.getElementById(battle-log);
+    let log = document.getElementById('battle-log');
     log.innerHTML = ``;
     let p = document.createElement('p');
     p.textContent = message;
@@ -461,7 +510,7 @@ function switchPokemon(cpuFeinted = false ) {
         let random = 0;
         do {
             random = Math.floor(Math.random() * 6)
-        } while (isFainted(team[random]));
+        } while (isFainted(json.enemyTeam[random].currentHP));
         return random
     } 
     else{

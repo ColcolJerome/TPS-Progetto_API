@@ -28,17 +28,7 @@ class pokemon {
 
 }
 
-export class moves {
-    constructor(name, priority, power, accuracy, pp, type, category){
-        this.name = name;
-        this.priority = priority;
-        this.power = power;
-        this.accuracy = accuracy; 
-        this.pp = pp;
-        this.type = type;
-        this.category = category;
-    }
-}
+
 export function CreateMiniCard(pokemon,isEmpty=false,dataSlot=0) {
     if(!isEmpty){
     let card = document.createElement('div');
