@@ -4,7 +4,7 @@ Ecco il diagramma di Gantt del nostro progetto:
 
 ```mermaid
 gantt
-    title Progetto: Pokémon Battle Sim (Co-op Battle Focus)
+    title Progetto: Pokémon Battle Sim
     dateFormat  YYYY-MM-DD
     axisFormat  %d/%m
     
@@ -31,5 +31,5 @@ gantt
     Documentazione Tecnica (Diego):t9, 2026-01-13, 6d
     
     section Chiusura Progetto
-    Integrazione Shop in Battle (Team):t10, 2026-01-20, 3d
+    Integrazione Shop (Team):t10, 2026-01-20, 3d
     Final Polish & Deploy (Team)  :t11, 2026-01-23, 2d
