@@ -1,0 +1,27 @@
+name: Compila LaTeX in Sottocartella
+on: [push]
+
+permissions:
+  contents: write
+
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repository
+        uses: actions/checkout@v3
+
+      - name: Compila il file LaTeX
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: docs/rendicontazione.tex 
+
+      - name: Salva il PDF nel repository
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          
+          git add docs/rendicontazione.pdf 
+          
+          git commit -m "Aggiornamento automatico PDF (cartella doc)" || echo "Nessun cambiamento"
+          git push
