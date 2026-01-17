@@ -1,6 +1,7 @@
 import { fetchPackOfPokemon } from './pullPokemon.mjs';
 import { CreateCard } from './pokemon.mjs';
 import { CreateMiniCard } from './pokemon.mjs';
+import { createElement } from 'https://cdn.skypack.dev/react';
 
 // ===== GAME STATE  =====
 
@@ -74,6 +75,7 @@ function showPage(pageId) {
         if(pageId === 'page-inventory') {
             renderInventory();
             renderActiveTeam();
+            console.log("Eseguo il render del'inventario")
         }
         targetPage.classList.remove('hidden');
 
@@ -189,15 +191,23 @@ function renderInventory() {
     if(gameState.inventory.length == 0){
         emptyPokemonMessage.classList.remove('hidden');
     }else{
-        emptyPokemonMessage.classList.add('hidden');
+
+        const pokemonGrid = document.getElementById('pokemon-grid');
+        pokemonGrid.innerHTML = "";
+        pokemonGrid.appendChild(createEmptyMessagge());
         gameState.inventory.forEach(pokemon => {
-            const pokemonGrid = document.getElementById('pokemon-grid');
+            
             const pokemonCard = CreateCard(pokemon, true);
             pokemonGrid.appendChild(pokemonCard);
         });
     }
 }
-
+function createEmptyMessagge(){
+    let message = document.createElement("div");
+    message.setAttribute('id','empty-message');
+    message.classList.add("hidden","empty-message");
+    return message;
+}
 export function selectForBattle(pokemonId) {
     // TODO: Trova Pokemon in gameState.inventory per ID
     // TODO: Controlla se team ha slot liberi (max 3)
