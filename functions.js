@@ -363,7 +363,7 @@ function useMove(moveIndex, cpuIsAttacker = false) {
     
     let nDamage = null;
     let pkmCPU = json.activePokemonCPU;
-    let pkmPLA = json.activePokemonPLA
+    let pkmPLA = json.activePokemonPLA;
 
     if (cpuIsAttacker){
         nDamage = calculateDMG(pkmCPU, pkmPLA, pkmCPU.moves[moveIndex]);
@@ -385,17 +385,28 @@ function useMove(moveIndex, cpuIsAttacker = false) {
     }
     else{
         nDamage = calculateDMG(pkmPLA, pkmCPU, pkmPLA.moves[moveIndex]);
-        console.log(nDamage);
         addBattleLog(`${pkmPLA.name} ha utilizzato ${pkmPLA.moves[moveIndex].name}`);
         pkmCPU.currentHP -= nDamage;
-        console.log(pkmCPU.currentHP);
         updateHPBar('enemy-hp-bar', pkmCPU.currentHP, pkmCPU.maxHP);
         if (isFainted(pkmCPU.currentHP)){
             let win = checkWin(json.enemyTeam);
             if (win){
                 onBattleWin()
             } else {
+
+                for (let i = 0; i <= json.enemyTeam.length; i++){
+                    if (json.enemyTeam[i].name == pkmCPU.name){
+
+                        json.enemyTeam[i].currentHP = pkmCPU.currentHP
+                        break;
+                        
+                    }
+                }
+
+                saveBattleState(json);
+
                 pkmCPU = json.enemyTeam[switchPokemon(json.enemyTeam, true)];
+                
                 json.activePokemonCPU = pkmCPU;
                 renderCPU(pkmCPU);
 
@@ -410,31 +421,32 @@ function useMove(moveIndex, cpuIsAttacker = false) {
 }
 
 function isFainted(hp){
-    console.log(hp);
     return hp <= 0;
 }
 
 function checkWin(attacker){
+
     let counter = 0
     attacker.forEach(pkm => {
         if (isFainted(pkm.currentHP)){
             counter++
         }
     });
-    return counter == 6
+
+    return counter == 5
 }
 
 function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chiesto al chat :)
     let attackStat = move.category.name === "physical"
     ? attacker.attack
     : attacker.specialAttack;
-    console.log(attackStat);
+    
     let defenseStat = move.category.name === "physical"
     ? defender.defense
     : defender.specialDefense;
-    console.log(defenseStat);
+
     let baseDamage = (((2 * attacker.level / 5 + 2) * move.power * attackStat / defenseStat) / 50) + 2;
-    console.log(baseDamage);
+
     // STAB
     if (attacker.type.includes(move.type)) {
         baseDamage *= 1.5;
@@ -442,11 +454,11 @@ function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chie
 
     // efficacia tipi
     baseDamage *= getTypeEffectiveness(move.type, defender.type);
-    console.log(baseDamage);
+
     return Math.floor(baseDamage);
 }
 
-function getTypeEffectiveness(type, defenderType) { // fatto con il chat :)
+function getTypeEffectiveness(e) { // fatto con il chat :) type, defenderTyp
     const TYPE_CHART = {
         "normal": { "rock": 0.5, "ghost": 0, "steel": 0.5 },
         "fire": { "grass": 2, "ice": 2, "bug": 2, "steel": 2, "fire": 0.5, "water": 0.5, "rock": 0.5, "dragon": 0.5 },
@@ -467,11 +479,21 @@ function getTypeEffectiveness(type, defenderType) { // fatto con il chat :)
         "steel": { "ice": 2, "rock": 2, "fairy": 2, "fire": 0.5, "water": 0.5, "electric": 0.5, "steel": 0.5 },
         "fairy": { "fighting": 2, "dragon": 2, "dark": 2, "fire": 0.5, "poison": 0.5, "steel": 0.5 }
     };
+    let type = "normal"
     console.log(type);
     console.log(defenderType);
     let listDmg = [];
     for(let i = 0; i < defenderType.length; i++){
+        console.log("roba nell'array", TYPE_CHART[type][defenderType[i]])
         listDmg.push(TYPE_CHART[type][defenderType[i]] || 1);
+    }
+    console.log(listDmg)
+    console.log(listDmg.reduce((a, b) => a * b, 1));
+    if (listDmg.lenght == 2){
+        console.log(listDmg[0] * [listDmg[1]])
+    }
+    else {
+        console.log(listDmg[0])
     }
     return listDmg.reduce((a, b) => a * b, 1);
 }
@@ -551,6 +573,8 @@ function onBattleWin() {
 
 function closeVictoryBanner() {
     // TODO: Nasconde #victory-banner
+    let lossPage = document.getElementById('victory-banner')
+    lossPage.classList.add('hidden');
     // TODO: Reset stato battaglia
     // TODO: Torna al menu
     showPage('page-menu');
