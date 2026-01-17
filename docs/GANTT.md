@@ -18,7 +18,7 @@ gantt
     
     %% PAUSA 31 Dic - 1 Gen %%
 
-    section Battle System (Co-op Heavy)
+    section Battle System
     %% Jerome e Francesco lavorano insieme qui per molto tempo %%
     Battle Logic & Arena Pt.1 (Jerome+Fra) :crit, t5, 2026-01-02, 4d
     %% PAUSA 6 Gen %%
