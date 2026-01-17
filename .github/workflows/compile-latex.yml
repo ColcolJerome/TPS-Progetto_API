@@ -1,4 +1,4 @@
-name: Compila LaTeX in Sottocartella
+name: Compila e Salva PDF
 on: [push]
 
 permissions:
@@ -8,20 +8,30 @@ jobs:
   build_latex:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Compila il file LaTeX
+      - name: Compila LaTeX
         uses: xu-cheng/latex-action@v2
         with:
           root_file: docs/rendicontazione.tex 
+
+      - name: Verifica dove sono i file
+        run: ls -R
 
       - name: Salva il PDF nel repository
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          git add docs/rendicontazione.pdf 
-          
-          git commit -m "Aggiornamento automatico PDF (cartella doc)" || echo "Nessun cambiamento"
+          if [ -f "docs/rendicontazione.pdf" ]; then
+            git add docs/rendicontazione.pdf
+          elif [ -f "rendicontazione.pdf" ]; then
+            git add rendicontazione.pdf
+          else
+            echo "ERRORE: PDF non trovato da nessuna parte!"
+            exit 1
+          fi
+
+          git commit -m "Aggiornamento automatico PDF" || echo "Nessuna modifica"
           git push
