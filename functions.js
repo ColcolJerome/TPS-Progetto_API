@@ -365,6 +365,7 @@ function useMove(moveIndex, cpuIsAttacker = false) {
     let pkmCPU = json.activePokemonCPU;
     let pkmPLA = json.activePokemonPLA;
 
+    //TODO: controlla condizione vittoria CPU una volta implementato lo switch pokemon PLA
     if (cpuIsAttacker){
         nDamage = calculateDMG(pkmCPU, pkmPLA, pkmCPU.moves[moveIndex]);
         addBattleLog(`${pkmCPU.name} ha utilizzato ${pkmCPU.moves[moveIndex].name}`);
@@ -415,9 +416,7 @@ function useMove(moveIndex, cpuIsAttacker = false) {
         }
     }
     saveBattleState(json);
-    
-    // TODO: Controlla se nemico sconfitto -> prossimo o vittoria
-    // TODO: Controlla se giocatore sconfitto -> switch o sconfitta
+
 }
 
 function isFainted(hp){
@@ -458,7 +457,7 @@ function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chie
     return Math.floor(baseDamage);
 }
 
-function getTypeEffectiveness(e) { // fatto con il chat :) type, defenderTyp
+function getTypeEffectiveness(type, defenderType) { // fatto con il chat :) type, defenderTyp
     const TYPE_CHART = {
         "normal": { "rock": 0.5, "ghost": 0, "steel": 0.5 },
         "fire": { "grass": 2, "ice": 2, "bug": 2, "steel": 2, "fire": 0.5, "water": 0.5, "rock": 0.5, "dragon": 0.5 },
@@ -479,22 +478,14 @@ function getTypeEffectiveness(e) { // fatto con il chat :) type, defenderTyp
         "steel": { "ice": 2, "rock": 2, "fairy": 2, "fire": 0.5, "water": 0.5, "electric": 0.5, "steel": 0.5 },
         "fairy": { "fighting": 2, "dragon": 2, "dark": 2, "fire": 0.5, "poison": 0.5, "steel": 0.5 }
     };
-    let type = "normal"
-    console.log(type);
-    console.log(defenderType);
+
     let listDmg = [];
     for(let i = 0; i < defenderType.length; i++){
         console.log("roba nell'array", TYPE_CHART[type][defenderType[i]])
-        listDmg.push(TYPE_CHART[type][defenderType[i]] || 1);
+        let test = TYPE_CHART[type][defenderType[i]];
+        listDmg.push(test === undefined ? 1 : test);
     }
-    console.log(listDmg)
-    console.log(listDmg.reduce((a, b) => a * b, 1));
-    if (listDmg.lenght == 2){
-        console.log(listDmg[0] * [listDmg[1]])
-    }
-    else {
-        console.log(listDmg[0])
-    }
+    
     return listDmg.reduce((a, b) => a * b, 1);
 }
 
