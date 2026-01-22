@@ -7,6 +7,7 @@
         "excludePattern": "(^|\\/|\\\\)_"
     },
     "opts": {
+	"readme": "./docs/homepage.md",
         "destination": "./docs-output",
         "recurse": true,
         "tutorials": "./docs" 
