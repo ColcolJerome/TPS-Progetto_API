@@ -656,6 +656,7 @@ body {
     right: 20px;
     text-align: center;
 }
+
 #player-pokemon {
     position: absolute;
     bottom: 20px;
@@ -672,9 +673,9 @@ body {
     height: 80px;
     image-rendering: pixelated;
 }
-.battle-pokemon.enemy img {
+/* .battle-pokemon.enemy img {
     transform: scaleX(-1);
-}
+} */
 .pokemon-info-battle {
     background: rgba(255,255,255,0.95);
     border: 3px solid #333;
