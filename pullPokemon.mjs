@@ -3,7 +3,7 @@ https://pokeapi.co/api/v2/pokemon/{id_pokemon}
 */
 import pokemon from './pokemon.mjs';
 
-async function fetchOneRandomPokemon() {
+export async function fetchOneRandomPokemon() {
     const PokemonAvalaible = 1025;
     let randomNumber = Math.floor(Math.random() * PokemonAvalaible) + 1;
     let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`);
@@ -47,7 +47,7 @@ async function createMoveFromAPIData(data) {
     return mosse;
 }
 
-async function createPokemonFromAPIData(data) {
+export async function createPokemonFromAPIData(data) {
     const defaultLevel = 50;
     let name = data.name;
     let type = [];
