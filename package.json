@@ -1,9 +1,10 @@
 {
   "devDependencies": {
     "clean-jsdoc-theme": "^4.3.0",
-    "jsdoc": "^4.0.5"
+    "jsdoc": "^4.0.5",
+    "shx": "^0.4.0"
   },
-"scripts": {
-    "docs": "jsdoc -c jsdoc.json"
+  "scripts": {
+    "docs": "jsdoc -c jsdoc.json && shx mkdir -p docs-output/pdf && shx cp docs/*.pdf docs-output/pdf/"
   }
 }
