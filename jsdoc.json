@@ -1,23 +1,25 @@
 {
-    "plugins": ["plugins/markdown"],
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "source": {
+        "include": ["."],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "exclude": ["node_modules", "docs-output", ".git", ".github", "docs"]
+    },
+    "opts": {
+        "readme": "docs/homepage.md",
+        "destination": "./docs-output",
+        "recurse": true
+    },
     "markdown": {
         "hardwrap": false,
         "idInHeadings": true
     },
-    "source": {
-        "include": ["."],
-        "includePattern": ".+\\.js(doc|x)?$",
-        "exclude": ["node_modules", "docs-output", ".git", ".github"],
-        "excludePattern": "(^|\\/|\\\\)_"
-    },
-    "opts": {
-	"readme": "./docs/homepage.md",
-        "destination": "./docs-output",
-        "recurse": true,
-        "tutorials": "./docs" 
-    },
     "templates": {
-        "cleverLinks": false,
-        "monospaceLinks": false
+        "default": {
+            "useLongnameInNav": false,
+            "showInherited": true
+        }
     }
 }
