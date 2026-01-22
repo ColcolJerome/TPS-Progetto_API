@@ -1,5 +1,9 @@
 {
     "plugins": ["plugins/markdown"],
+    "markdown": {
+        "hardwrap": false,
+        "idInHeadings": true
+    },
     "source": {
         "include": ["."],
         "includePattern": ".+\\.js(doc|x)?$",
