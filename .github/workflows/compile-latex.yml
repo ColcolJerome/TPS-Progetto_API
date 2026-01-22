@@ -16,22 +16,22 @@ jobs:
         with:
           root_file: docs/rendicontazione.tex 
 
-      - name: Verifica dove sono i file
-        run: ls -R
+      - name: Sposta PDF in /docs
+        run: |
+          # Il PDF viene generato nella root, lo spostiamo in /docs
+          if [ -f "rendicontazione.pdf" ]; then
+            mv rendicontazione.pdf docs/rendicontazione.pdf
+            echo "PDF spostato in docs/"
+          else
+            echo "ERRORE: PDF non trovato!"
+            exit 1
+          fi
 
       - name: Salva il PDF nel repository
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          if [ -f "docs/rendicontazione.pdf" ]; then
-            git add docs/rendicontazione.pdf
-          elif [ -f "rendicontazione.pdf" ]; then
-            git add rendicontazione.pdf
-          else
-            echo "ERRORE: PDF non trovato da nessuna parte!"
-            exit 1
-          fi
-
+          git add docs/rendicontazione.pdf
           git commit -m "Aggiornamento automatico PDF" || echo "Nessuna modifica"
           git push
