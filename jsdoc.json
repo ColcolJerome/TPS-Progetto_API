@@ -9,6 +9,7 @@
     },
     "opts": {
         "readme": "docs/homepage.md",
+	"tutorials": "./docs",
         "destination": "./docs-output",
         "recurse": true
     },
