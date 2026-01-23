@@ -426,7 +426,7 @@ async function useMove(moveIndex) {
     
     if (isFainted(pkmCPU.currentHP)){
         console.log("pokemon cpu fainted", pkmCPU);
-        addBattleLog(`${pkmCPU.name} è stato sconfitto!`);
+        addBattleLog(`${pkmCPU.name} è stato sconfitto! rimangono ${json.enemyTeam.length - checkWin(json.enemyTeam, true)}`);
         let win = checkWin(json.enemyTeam);
         if (win){
             onBattleWin();
@@ -442,6 +442,7 @@ async function useMove(moveIndex) {
             
             json.activePokemonCPU = pkmCPU;
             renderCPU(pkmCPU);
+
         }
         
     }
@@ -465,7 +466,7 @@ async function useMove(moveIndex) {
         updateHPBar('player-hp-bar', pkmPLA.currentHP, pkmPLA.maxHP);
 
         if (isFainted(pkmPLA.currentHP)){
-            addBattleLog(`${pkmCPU.name} è stato sconfitto!`);
+            addBattleLog(`${pkmCPU.name} è stato sconfitto! rimangono ${json.playerTeam.lenght - checkWin(json.playerTeam, true)}`);
             let loss = checkWin(json.playerTeam);
             console.log("loss condition", loss);
             if (loss){
@@ -502,13 +503,16 @@ function isFainted(hp){
     return hp <= 0;
 }
 
-function checkWin(attacker){
+function checkWin(attacker, forNum=false){
     let counter = 0
     attacker.forEach(pokemon => {
         if (isFainted(pokemon.currentHP)){
             counter++
         }
     });
+    if (forNum){
+        return counter
+    }
     return counter == attacker.length
 }
 
