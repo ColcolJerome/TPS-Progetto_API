@@ -19,6 +19,9 @@
     },
     "templates": {
         "default": {
+			"staticFiles": {
+                "include": ["docs/mermaid-fix.js"]
+            },
             "useLongnameInNav": false,
             "showInherited": true
         }
