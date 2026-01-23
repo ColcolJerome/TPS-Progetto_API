@@ -26,14 +26,46 @@ export async function fetchPackOfPokemon(packSize) {
     return pokemonList;
 }
 
+export async function pullLegendaryPokemon() {
+    let pokemonList = [];
+    const legendaryIndexes = [
+    144,145,146,150,243,244,245,249,
+    250,377,378,379,380,381,382,383,
+    384,480,481,482,483,485,486,487,
+    488,638,639,640,641,642,643,644,
+    645,646,772,773,785,786,787,788,
+    789,790,791,792,800,888,889,890,
+    891,892,894,895,896,897,898,905,
+    1001,1002,1003,1004,1007,1008
+    ];
 
+    let randomLegendaryId = legendaryIndexes[Math.floor(Math.random() * legendaryIndexes.length)];
+    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomLegendaryId}`);
+    let data = await response.json();
+    pokemonList.push(await createPokemonFromAPIData(data));
+    return pokemonList;
+}
 
 async function createMoveFromAPIData(data) {
     let mosse = [];
     //Prendo le prime 4 mosse disponibili
-    for (let i = 0; i < 4; i++) {
-        console.log(data.moves[i].move.url);
-        let moveInfo = await fetchPokemonMove(data.moves[i].move.url);
+    // for (let i = 0; i < 4; i++) {
+    //     console.log(data.moves[i].move.url);
+    //     let moveInfo = await fetchPokemonMove(data.moves[i].move.url);
+    //     mosse.push(new move(
+    //         moveInfo.name,
+    //         moveInfo.priority,
+    //         moveInfo.power,
+    //         moveInfo.accuracy,
+    //         moveInfo.pp,
+    //         moveInfo.type.name,
+    //         moveInfo.damage_class
+    //     ));
+    // }
+    while(mosse.length < 4){
+        let moveInfo = await fetchPokemonMove(data.moves[Math.floor(Math.random() * data.moves.length)].move.url);
+        console.log(moveInfo);
+        if (moveInfo.damage_class.name == 'status') continue;   
         mosse.push(new move(
             moveInfo.name,
             moveInfo.priority,

@@ -11,7 +11,7 @@ import { createElement } from 'https://cdn.skypack.dev/react';
 import pokemon from "./pokemon.mjs";
 
 let gameState = {
-    coins: 500,
+    coins: 50000,
     inventory: [],
     activeTeam: [],
     currentBattle: null
@@ -130,12 +130,15 @@ function spendCoins(amount) {
 function updateCoinDisplay() {
     const coinCounter = document.getElementById('coin-counter');
     const shopCoinDisplay = document.getElementById('shop-coin-display');
-
+    const gamblingCoinDisplay = document.getElementById('gambling-coin-display');   
     if (shopCoinDisplay) {
         shopCoinDisplay.textContent = gameState.coins;
     }
     if (coinCounter) {
         coinCounter.textContent = gameState.coins;
+    }
+    if (gamblingCoinDisplay) {
+        gamblingCoinDisplay.textContent = gameState.coins;
     }
 }
 
@@ -152,7 +155,7 @@ async function buyPack(packType) {
     // TODO: Aggiorna #last-pokemon
     // packType: 'base' o 'legendary'
     const packBaseCost = 250;
-    const packLegendaryCost = 2000;
+    const packLegendaryCost = 2500;
     switch (packType) {
         case 'base':
 
@@ -171,13 +174,15 @@ async function buyPack(packType) {
 async function pullPack(cost,numberOfPokemon, packType){
     let hasMoney = false;
     hasMoney = spendCoins(cost);
+    let pokemonEstratti = [];
     if(hasMoney){
         if(packType == 'legendary'){
-            let pokemonEstratti = await pullLegendaryPokemon(cost);
+            pokemonEstratti = await pullLegendaryPokemon();
+            console.log("Legendary acquistato: " + pokemonEstratti);
         }
         else{
             console.log("Pack acquistato: " + packType);
-            let pokemonEstratti = await fetchPackOfPokemon(numberOfPokemon);
+            pokemonEstratti = await fetchPackOfPokemon(numberOfPokemon);
             console.log(pokemonEstratti);
         }
         for(let p of pokemonEstratti){
@@ -308,6 +313,7 @@ function renderActiveTeam() {
 // ===== BATTLE =====
 
 async function startBattle() {
+    disableBtnMoves();
     let json = JSON.parse(localStorage.getItem('gameState'));   
     let state = {
         'playerTeam' : [],
@@ -323,6 +329,7 @@ async function startBattle() {
     else{
         let enemies = [];
             enemies = await fetchPackOfPokemon(6);
+            enableBtnMoves();
             state['enemyTeam'] = enemies;
             let copyTeam = json.activeTeam.slice()  
             state['playerTeam'] = copyTeam;
@@ -426,7 +433,10 @@ async function useMove(moveIndex) {
         } 
         else {
             saveBattleState(json);
-            await randomPokemonOnTeam(json);
+            if(json.playerTeam.length < 5){
+                await randomPokemonOnTeam(json);
+            }   
+            saveBattleState(json);
             console.log("stato dopo possibile aggiunta pokemon 2", json);
             pkmCPU = json.enemyTeam[switchPokemon(json.enemyTeam, true)];
             

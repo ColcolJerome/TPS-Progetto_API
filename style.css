@@ -959,17 +959,21 @@ body {
     justify-content: center;
     z-index: 2500;
     padding: 20px;
+    max-height: 100vh;
+    overflow-y: auto;
 }
 .switch-title {
     color: white;
     font-size: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 .switch-pokemon-list {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    justify-items: center;
+    max-width: 600px;
+    width: 100%;
 }
 
 
