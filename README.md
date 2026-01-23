@@ -72,7 +72,9 @@ Questo progetto è una ricreazione delle battaglie dei vecchi giochi Pokemon con
 <!-- GETTING STARTED -->
 ## Per Iniziare
 
-Apri la pagina HTML da browser
+1) npm install --save-dev jsdoc
+2) npm install --save-dev shx
+3) Apri la pagina HTML da browser
 
 ### Prerequisiti
 

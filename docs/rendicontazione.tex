@@ -1,0 +1,109 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{colortbl}
+
+% Impostazione margini
+\geometry{top=2.5cm, bottom=2.5cm, left=1.2cm, right=1.2cm}
+
+% Definizione colori per alternanza righe
+\definecolor{lightgray}{gray}{0.96}
+
+% Definizione comando per celle con ore vuote
+\newcommand{\nil}{\textcolor{gray}{-}}
+
+\begin{document}
+
+% --- INTESTAZIONE DEL PROGETTO ---
+\begin{center}
+    {\LARGE \textbf{Rendicontazione Ore: Pokémon Battle Sim}} \\[0.5cm]
+    {\large \textbf{Periodo:} 27 Dicembre 2025 -- 25 Gennaio 2026} \\[0.2cm]
+    \small \textit{Nota: Rendicontazione aggiornata al 18 Gennaio (Settimana finale in attesa)}
+\end{center}
+
+\vspace{0.3cm}
+
+
+% --- TABELLA ORE ---
+\begin{longtable}{l l c c c | c | p{4.5cm}}
+    
+    % Intestazione Tabella
+    \toprule
+    \textbf{Data} & \textbf{Giorno} & 
+    \textbf{\parbox{2cm}{\centering Daminelli\\Francesco}} & 
+    \textbf{\parbox{2cm}{\centering Ripamonti\\Diego}} & 
+    \textbf{\parbox{2cm}{\centering ColCol\\Jerome}} & 
+    \textbf{Tot.} & \textbf{Attività (Rif. Gantt)} \\
+    \midrule
+    \endfirsthead
+    
+    % Intestazione per pagine successive
+    \multicolumn{7}{c}{{\small \textit{... continua dalla pagina precedente}}} \\
+    \toprule
+    \textbf{Data} & \textbf{Giorno} & 
+    \textbf{\parbox{2cm}{\centering Daminelli\\Francesco}} & 
+    \textbf{\parbox{2cm}{\centering Ripamonti\\Diego}} & 
+    \textbf{\parbox{2cm}{\centering ColCol\\Jerome}} & 
+    \textbf{Tot.} & \textbf{Attività (Rif. Gantt)} \\
+    \midrule
+    \endhead
+    
+    % Footer
+    \bottomrule
+    \endlastfoot
+
+    % --- FASE 1: SETUP & DATA FETCHING (28 Dic - 02 Gen) ---
+    27/12/2025 & Sabato    & 1 & 1 & 1 & \textbf{3} & Brainstorming iniziale \\ \rowcolor{lightgray}
+    28/12/2025 & Domenica  & 2 & 2 & 2 & \textbf{6} & Setup Repo Git (Team) \\ 
+    29/12/2025 & Lunedì    & \nil & \nil & 3 & \textbf{3} & Studio API Esterne \\ \rowcolor{lightgray}
+    30/12/2025 & Martedì   & 2 & 1 & 2 & \textbf{4} & Struttura UI (Fra) / Service Dati (Jer) \\ 
+    % Saltato 31 Dic
+    
+    % --- FASE 2: BATTLE SYSTEM & INIZIO SHOP (02 Gen - 11 Gen) ---
+    % Saltato 1 Gen
+    \rowcolor{lightgray}
+    02/01/2026 & Venerdì   & 2 & \nil & 2 & \textbf{4} & Completamento Fetching \& UI Base \\ 
+    03/01/2026 & Sabato    & 3 & \nil & 3 & \textbf{6} & Battle Logic \& Arena Pt.1 \\ \rowcolor{lightgray}
+    04/01/2026 & Domenica  & \nil & \nil & \nil & \textbf{0} & - \\ 
+    05/01/2026 & Lunedì    & \nil & 3 & \nil & \textbf{3} & Logica Negozio/Gacha (Inizio) \\ 
+    % Saltato 6 Gen
+    \rowcolor{lightgray}
+    07/01/2026 & Mercoledì & 3 & 2 & 3 & \textbf{8} & Battle Logic Pt.2 (J+F) / Gacha (D) \\ 
+    08/01/2026 & Giovedì   & \nil & 3 & \nil & \textbf{3} & Implementazione UI Shop \\ \rowcolor{lightgray}
+    09/01/2026 & Venerdì   & 3 & 2 & 3 & \textbf{8} & Battle Arena Final (J+F) / UI Shop (D) \\ 
+    10/01/2026 & Sabato    & \nil & \nil & \nil & \textbf{0} & - \\ \rowcolor{lightgray}
+    11/01/2026 & Domenica  & \nil & \nil & \nil & \textbf{0} & - \\ 
+    
+    % --- FASE 3: DOCUMENTAZIONE & INTEGRAZIONE (12 Gen - 18 Gen) ---
+    12/01/2026 & Lunedì    & \nil & 3 & \nil & \textbf{3} & Documentazione Tecnica \\ \rowcolor{lightgray}
+    13/01/2026 & Martedì   & 5 & 2 & 5 & \textbf{12} & Code Review interna / Docs \\ 
+    14/01/2026 & Mercoledì & \nil & 3 & \nil & \textbf{3} & Completamento Documentazione \\ \rowcolor{lightgray}
+    15/01/2026 & Giovedì   & 2 & \nil & 2 & \textbf{4} & Ottimizzazione Battle System \\ 
+    16/01/2026 & Venerdì   & \nil & \nil & \nil & \textbf{0} & - \\ \rowcolor{lightgray}
+    17/01/2026 & Sabato    & 2 & 2 & 2 & \textbf{6} & - \\ 
+    18/01/2026 & Domenica  & \nil & \nil & \nil & \textbf{0} & - \\ 
+    
+    % --- FASE 4: CHIUSURA PROGETTO (SETTIMANA FUTURA) ---
+    \rowcolor{lightgray}
+    19/01/2026 & Lunedì    & \nil & \nil & \nil & \textbf{0} & Integrazione Shop (Pianificato) \\ 
+    20/01/2026 & Martedì   & \nil & \nil & \nil & \textbf{0} & Debugging (Pianificato) \\ \rowcolor{lightgray}
+    21/01/2026 & Mercoledì & \nil & \nil & \nil & \textbf{0} & Fix UI minori (Pianificato) \\ 
+    22/01/2026 & Giovedì   & \nil & \nil & \nil & \textbf{0} & Final Polish (Pianificato) \\ \rowcolor{lightgray}
+    23/01/2026 & Venerdì   & \nil & \nil & \nil & \textbf{0} & Deploy finale (Pianificato) \\ 
+    24/01/2026 & Sabato    & \nil & \nil & \nil & \textbf{0} & - \\ \rowcolor{lightgray}
+    25/01/2026 & Domenica  & \nil & \nil & \nil & \textbf{0} & Verifica (Pianificato) \\ 
+    
+    \midrule
+    \rowcolor{white}
+    \textbf{TOTALE ORE} & & \textbf{25} & \textbf{24} & \textbf{28} & \textbf{77} & \\
+    \bottomrule
+    
+\end{longtable}
+
+\end{document}

@@ -1,7 +1,7 @@
 /*
 TODO:Crea una classe pokemon con nome, livello, vita, tipo, lista di mosse(che contiene il nome e i danni della mossa).
 */ 
-import { removeFromTeam, selectForBattle } from './functions.js';
+import { removeFromTeam, selectForBattle, selectSwitchPokemon } from './functions.js';
 class pokemon {
     constructor(id,name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves, frontSprite, backSprite) {
         this.id = id;
@@ -26,22 +26,9 @@ class pokemon {
 
     }
 
-    isFainted() {
-        return this.currentHP <= 0;
-    }
-
 }
 
-export class moves {
-    constructor(name, priority, power, accuracy, pp, type){
-        this.name = name;
-        this.priority = priority;
-        this.power = power;
-        this.accuracy = accuracy; 
-        this.pp = pp;
-        this.type = type;
-    }
-}
+
 export function CreateMiniCard(pokemon,isEmpty=false,dataSlot=0) {
     if(!isEmpty){
     let card = document.createElement('div');
@@ -81,7 +68,7 @@ export function CreateMiniCard(pokemon,isEmpty=false,dataSlot=0) {
         return emptyCard;
     }
 }
-export function CreateCard(pokemon, isForBattle=false) {
+export function CreateCard(pokemon, isForTeam=false, isForBattle=false) {
     let card = document.createElement('div');
     card.classList.add('pokemon-card-show');
     card.setAttribute('data-id', pokemon.id);
@@ -131,13 +118,23 @@ export function CreateCard(pokemon, isForBattle=false) {
     });
     
     card.appendChild(stats);
-    if(isForBattle) {
+    if(isForTeam) {
         let selectBtn = document.createElement('button');
         selectBtn.classList.add('btn-ds', 'btn-green', 'btn-small', 'btn-select');
         selectBtn.textContent = 'SELEZIONA';
         selectBtn.onclick = () => selectForBattle(pokemon.id);
         card.appendChild(selectBtn);
     }
+
+    if(isForBattle) {
+        let selectBtn = document.createElement('button');
+        selectBtn.classList.add('btn-ds', 'btn-green', 'btn-small', 'btn-select');
+        selectBtn.textContent = 'SELEZIONA';
+        selectBtn.onclick = () => selectSwitchPokemon(pokemon.id);
+        card.appendChild(selectBtn);
+    }
+
+
     return card;
 }
 

@@ -2,9 +2,8 @@
 https://pokeapi.co/api/v2/pokemon/{id_pokemon}
 */
 import pokemon from './pokemon.mjs';
-import moves from './pokemon.mjs';
 
-async function fetchOneRandomPokemon() {
+export async function fetchOneRandomPokemon() {
     const PokemonAvalaible = 1025;
     let randomNumber = Math.floor(Math.random() * PokemonAvalaible) + 1;
     let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`);
@@ -33,20 +32,22 @@ async function createMoveFromAPIData(data) {
     let mosse = [];
     //Prendo le prime 4 mosse disponibili
     for (let i = 0; i < 4; i++) {
+        console.log(data.moves[i].move.url);
         let moveInfo = await fetchPokemonMove(data.moves[i].move.url);
-        mosse.push(new moves(
+        mosse.push(new move(
             moveInfo.name,
             moveInfo.priority,
             moveInfo.power,
             moveInfo.accuracy,
             moveInfo.pp,
-            moveInfo.type.name
+            moveInfo.type.name,
+            moveInfo.damage_class
         ));
     }
     return mosse;
 }
 
-async function createPokemonFromAPIData(data) {
+export async function createPokemonFromAPIData(data) {
     const defaultLevel = 50;
     let name = data.name;
     let type = [];
@@ -62,4 +63,16 @@ async function createPokemonFromAPIData(data) {
     let frontSprite = data.sprites.front_default;
     let backSprite = data.sprites.back_default;
     return new pokemon(data.id, name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves, frontSprite, backSprite);
+}
+
+class move {
+    constructor(name, priority, power, accuracy, pp, type, category){
+        this.name = name;
+        this.priority = priority;
+        this.power = power;
+        this.accuracy = accuracy; 
+        this.pp = pp;
+        this.type = type;
+        this.category = category;
+    }
 }

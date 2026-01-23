@@ -1,0 +1,21 @@
+# Dipendenze (NON caricare mai questa cartella)
+node_modules/
+
+# Cartella di output della documentazione (la genera la pipeline)
+docs-output/
+
+# Log di errore (se qualcosa va storto in locale)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# File di sistema operativo (spazzatura generata da Mac o Windows)
+.DS_Store
+Thumbs.db
+
+# Cartelle di build o dist (se mai userai bundler)
+dist/
+build/
+
+# File di configurazione variabili d'ambiente (spesso contengono password)
+.env
