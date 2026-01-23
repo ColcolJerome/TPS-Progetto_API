@@ -11,7 +11,7 @@ import { createElement } from 'https://cdn.skypack.dev/react';
 import pokemon from "./pokemon.mjs";
 
 let gameState = {
-    coins: 25000,
+    coins: 500,
     inventory: [],
     activeTeam: [],
     currentBattle: null
@@ -73,28 +73,23 @@ function showPage(pageId) {
     // pageId: page-menu, page-inventory, page-shop, page-battle
     
     savePageState(pageId);
-    console.log("Showing page:", pageId);
     const pages = document.querySelectorAll('.page');
     pages.forEach(page => {
-        console.log("Hiding page:", page.id);
         page.classList.add('hidden');
     });
     
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
+        targetPage.classList.remove('hidden');
         switch(pageId) {
             case 'page-inventory':
                 renderInventory();
                 renderActiveTeam();
-                targetPage.classList.remove('hidden');
                 break;
             case 'page-battle':
                 startBattle();
-                targetPage.classList.remove('hidden');
                 break;
-            default:
-                targetPage.classList.remove('hidden');
-                break;
+
         }
         
 
@@ -292,9 +287,7 @@ function renderActiveTeam() {
 // ===== BATTLE =====
 
 async function startBattle() {
-    let json = JSON.parse(localStorage.getItem('gameState'));
-    let PLAimg = document.getElementById('player-sprite');
-    let CPUimg = document.getElementById('enemy-sprite');    
+    let json = JSON.parse(localStorage.getItem('gameState'));   
     let state = {
         'playerTeam' : [],
         'enemyTeam' : [],
@@ -303,14 +296,7 @@ async function startBattle() {
     }
     
     if(json.activeTeam.length == 0){
-        const battlepage = document.getElementById('page-battle');
-        console.log("Elemento page-battle trovato?", battlepage);
         alert("non hai pokemon in squadra!");
-        if(battlepage) {
-            console.log("Classe prima:", battlepage.classList);
-            battlepage.classList.add('hidden');
-            console.log("Classe dopo:", battlepage.classList);
-        }
         showPage("page-inventory");
     }
     else{
@@ -331,31 +317,14 @@ async function startBattle() {
                 }
             }
     
-            saveBattleState(state);
-
-            
+            saveBattleState(state); 
     }
 }
-
-
-function renderMoveButtons(pokemon){
-    document.querySelectorAll('.move-btn').forEach((button, index) => {
-        if(pokemon.moves[index]){
-            button.textContent = pokemon.moves[index].name;
-            button.disabled = false;
-        } else {
-            button.textContent = '---';
-            button.disabled = true;
-        }}
-    );
-}
-
 function disableBtnMoves(){
     document.querySelectorAll('.move-btn').forEach((button) => {
         button.disabled = true;
     });
 }
-
 function enableBtnMoves(){
     document.querySelectorAll('.move-btn').forEach((button) => {
         button.disabled = false;
@@ -368,7 +337,7 @@ function renderPLA(pokemon){
     let PLAname = document.getElementById('player-name');
     let PLAcurrentHP = document.getElementById('player-hp-current');
     let PLAmaxHP = document.getElementById('player-hp-max');
-
+    
     PLAname.textContent = pokemon.name;
     PLAcurrentHP.textContent = pokemon.currentHP;
     PLAmaxHP.textContent = pokemon.maxHP;
@@ -376,7 +345,7 @@ function renderPLA(pokemon){
         PLAimg.src = pokemon.backSprite;
     }
     else{
-    PLAimg.src = pokemon.frontSprite;
+        PLAimg.src = pokemon.frontSprite;
     }
     renderMoveButtons(pokemon);
 }
@@ -387,13 +356,24 @@ function renderCPU(pokemon){
     let CPUname = document.getElementById('enemy-name');
     let CPUcurrentHP = document.getElementById('enemy-hp-current');
     let CPUmaxHP = document.getElementById('enemy-hp-max');
-
+    
     CPUname.textContent = pokemon.name;
     CPUcurrentHP.textContent = pokemon.currentHP;
     CPUmaxHP.textContent = pokemon.maxHP;
     CPUimg.src = pokemon.frontSprite;
 }
 
+function renderMoveButtons(pokemon){
+    document.querySelectorAll('.move-btn').forEach((button, index) => {
+        if(pokemon.moves[index]){
+            button.textContent = pokemon.moves[index].name;
+            button.disabled = false;
+        } else {
+            button.textContent = '---';
+            button.disabled = true;
+        }}
+    );
+}
 async function useMove(moveIndex) {
     let json = JSON.parse(localStorage.getItem('state'));
     
@@ -403,33 +383,32 @@ async function useMove(moveIndex) {
 
     //Turno player
     nDamage = calculateDMG(pkmPLA, pkmCPU, pkmPLA.moves[moveIndex]);
-    console.log("Danno calcolato PLA:", nDamage);
+
     addBattleLog(`${pkmPLA.name} ha utilizzato ${pkmPLA.moves[moveIndex].name}`);
+
     pkmCPU.currentHP -= nDamage;
+
     json.enemyTeam.forEach(pokemon => {
-                if(pokemon.id == pkmCPU.id){
-                    pokemon.currentHP = pkmCPU.currentHP;
-                }});
+        if(pokemon.id == pkmCPU.id){
+            pokemon.currentHP = pkmCPU.currentHP;
+        }
+    });
+
     updateHPBar('enemy-hp-bar', pkmCPU.currentHP, pkmCPU.maxHP);
     
     if (isFainted(pkmCPU.currentHP)){
         console.log("pokemon cpu fainted", pkmCPU);
+        addBattleLog(`${pkmCPU.name} è stato sconfitto!`);
         let win = checkWin(json.enemyTeam);
         if (win){
             onBattleWin();
         } 
         else {
-            let findRandomPokemon = 0.15
-            let random = Math.random();
-            console.log("random nunmber:", random);
-            if(random  < findRandomPokemon){
-                let randomPokemon = await createPokemonFromAPIData(await fetchOneRandomPokemon());
-                addBattleLog(`${randomPokemon.name} si è aggiunto al team momentaneamente!`);
-                json.playerTeam.push(randomPokemon);
-            }
             saveBattleState(json);
+            await randomPokemonOnTeam(json);
+            console.log("stato dopo possibile aggiunta pokemon 2", json);
             pkmCPU = json.enemyTeam[switchPokemon(json.enemyTeam, true)];
-            console.log("pokemon cpu dopo lo switch", pkmCPU);
+            
             json.activePokemonCPU = pkmCPU;
             renderCPU(pkmCPU);
         }
@@ -439,17 +418,23 @@ async function useMove(moveIndex) {
     disableBtnMoves();
     setTimeout(() => {
         let randomMove = Math.floor(Math.random() * pkmCPU.moves.length);
+
         nDamage = calculateDMG(pkmCPU, pkmPLA, pkmCPU.moves[randomMove]);
-        console.log("Danno calcolato CPU:", nDamage);
+
         addBattleLog(`${pkmCPU.name} ha utilizzato ${pkmCPU.moves[randomMove].name}`);
-        pkmPLA.currentHP -= nDamage; 
+
+        pkmPLA.currentHP -= nDamage;
+
         json.playerTeam.forEach(pokemon => {
-        if(pokemon.id == pkmPLA.id){
-            pokemon.currentHP = pkmPLA.currentHP;
-        }});
-        console.log("Tempo dopo danno CPU:", json.playerTeam);
+            if(pokemon.id == pkmPLA.id){
+                pokemon.currentHP = pkmPLA.currentHP;
+            }
+        });
+
         updateHPBar('player-hp-bar', pkmPLA.currentHP, pkmPLA.maxHP);
+
         if (isFainted(pkmPLA.currentHP)){
+            addBattleLog(`${pkmCPU.name} è stato sconfitto!`);
             let loss = checkWin(json.playerTeam);
             console.log("loss condition", loss);
             if (loss){
@@ -460,6 +445,7 @@ async function useMove(moveIndex) {
                 json.activePokemonPLA = pkmPLA;
                 renderPLA(pkmPLA);
             }}
+
         //Essendo in un timeout, devo salvare lo stato qui dentro. Fuori viene eseguito prima del timeout
         console.log("stato dopo i due turni", json);
         saveBattleState(json);
@@ -467,6 +453,20 @@ async function useMove(moveIndex) {
     }, 1000);
 }
 
+async function randomPokemonOnTeam(json) {
+    let findRandomPokemonPercentage = 0.20;
+    let random = Math.random();
+    console.log("random nunmber:", random);
+    if(random  < findRandomPokemonPercentage){
+        let randomPokemon = await createPokemonFromAPIData(await fetchOneRandomPokemon());
+        addBattleLog(`${randomPokemon.name} si è aggiunto al team!`);
+        console.log("adding pokemon to team:", randomPokemon);
+        json.playerTeam.push(randomPokemon);
+        console.log("battlestate:", json);
+    }
+    saveBattleState(json);
+    console.log("stato dopo il possibile aggiunta pokemon 1", json);
+}
 function isFainted(hp){
     return hp <= 0;
 }
@@ -499,7 +499,14 @@ function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chie
     }
 
     // efficacia tipi
-    baseDamage *= getTypeEffectiveness(move.type, defender.type);
+    let effectiveness = getTypeEffectiveness(move.type, defender.type);
+    if (effectiveness > 1) {
+        setTimeout(() => {addBattleLog("È super efficace!");}, 500);
+    } else if (effectiveness < 1 && effectiveness > 0) {
+                setTimeout(() => {addBattleLog("Non è molto efficace...");}, 500);
+    }
+
+    baseDamage *= effectiveness;
 
     return Math.floor(baseDamage);
 }
@@ -639,13 +646,10 @@ function closeSwitchModal() {
 function onBattleWin() {
     console.log("hai vinto la battaglia");
     let winPage = document.getElementById('victory-banner');
+    winPage.classList.remove('hidden');
     console.log("Elemento banner trovato?", winPage);
-    if(winPage) {
-        console.log("Classe hidden prima:", winPage.classList);
-        winPage.classList.remove('hidden');
-        console.log("Classe hidden dopo:", winPage.classList);
-    }
     addCoins(100);
+    saveGame();
     // TODO: Aggiungi animazione/suono vittoria
 }
 
@@ -661,12 +665,7 @@ function closeVictoryBanner() {
 function onBattleLose() {
     console.log("hai perso la battaglia");
     let lossPage = document.getElementById('defeat-banner');
-    console.log("Elemento banner trovato?", lossPage);
-    if(lossPage) {
-        console.log("Classe hidden prima:", lossPage.classList);
-        lossPage.classList.remove('hidden');
-        console.log("Classe hidden dopo:", lossPage.classList);
-    }
+    lossPage.classList.remove('hidden');
 }
 
 function closeDefeatBanner() {
