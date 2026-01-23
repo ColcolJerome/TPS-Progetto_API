@@ -22,11 +22,6 @@ let packRevealPromise = null;
 // ===== INITIALIZATION =====
 
 document.addEventListener('DOMContentLoaded', function() {
-    // TODO: Inizializza gameState con valori default
-    // TODO: Carica dati salvati da localStorage se esistono
-    // TODO: Imposta monete iniziali a 500
-    // TODO: Chiama updateCoinDisplay()
-    // TODO: Mostra pagina menu
     if(!loadGame()){
         saveGame();
     }
@@ -41,16 +36,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ===== LOCAL STORAGE =====
-
+/**
+ * saves current page in local storage
+ * @param {string} pageId 
+ */
 function savePageState(pageId){
     localStorage.setItem('page', pageId);
 }
-
+/**
+ * saves game state in local storage
+ */
 function saveGame() {
     // TODO: Salva gameState in localStorage
     localStorage.setItem('gameState', JSON.stringify(gameState));
 }
-
+/** 
+ * loads game state from local storage
+*/
 function loadGame() {
     // TODO: Carica gameState da localStorage
     // TODO: Ritorna true se dati trovati, false altrimenti
@@ -71,7 +73,10 @@ function saveBattleState(battleState){ //smh the above comment is useless
 }
 
 // ===== NAVIGATION =====
-
+/**
+ * Shows a specific page and hides all others
+ * @param {string} pageId 
+ */
 function showPage(pageId) {
     // pageId: page-menu, page-inventory, page-shop, page-battle
     
@@ -106,19 +111,21 @@ function showPage(pageId) {
 }
 
 // ===== COIN MANAGEMENT =====
-
+/**
+ * Adds coins to the player's total
+ * @param {int} amount 
+ */
 function addCoins(amount) {
     gameState.coins += amount;
     updateCoinDisplay();
 }
 
+/**
+ * Checks if the player has enough coins to spend and deducts them
+ * @param {int} amount 
+ * @returns 
+ */
 function spendCoins(amount) {
-    // TODO: Controlla se gameState.coins >= amount
-    // TODO: Se si, sottrae e ritorna true
-    // TODO: Se no, ritorna false (mostrare messaggio errore?)
-    // amount: number (100 per base, 2000 per legendary)
-    // return: boolean
-
     if(gameState.coins >= amount){
         gameState.coins -= amount;
         updateCoinDisplay();
@@ -129,7 +136,9 @@ function spendCoins(amount) {
         return false;
     }
 }
-
+/**
+ * Updates all coin displays in the game
+ */
 function updateCoinDisplay() {
     const coinCounter = document.getElementById('coin-counter');
     const shopCoinDisplay = document.getElementById('shop-coin-display');
@@ -148,15 +157,11 @@ function updateCoinDisplay() {
 
 // ===== SHOP =====
 
+/**
+ * Manages the buying of a pack of pokemons
+ * @param {string} packType 
+ */
 async function buyPack(packType) {
-    // TODO: Se successo, genera Pokemon random:
-    //       - base: Pokemon comune (ID 1-151 esclusi leggendari)
-    //       - legendary: Pokemon leggendario (es: 144,145,146,150,151,etc)
-    // TODO: Chiama API PokeAPI per ottenere dati Pokemon
-    // TODO: Aggiungi Pokemon a gameState.inventory
-    // TODO: Chiama showPackReveal() con dati Pokemon
-    // TODO: Aggiorna #last-pokemon
-    // packType: 'base' o 'legendary'
     const packBaseCost = 250;
     const packLegendaryCost = 2500;
     switch (packType) {
@@ -173,7 +178,12 @@ async function buyPack(packType) {
     saveGame();
 }
 
-
+/**
+ * Manages the pulling of a pack of pokemons
+ * @param {int} cost 
+ * @param {int} numberOfPokemon 
+ * @param {string} packType 
+ */
 async function pullPack(cost,numberOfPokemon, packType){
     let hasMoney = false;
     hasMoney = spendCoins(cost);
@@ -195,15 +205,16 @@ async function pullPack(cost,numberOfPokemon, packType){
         }
     }
 }
+/**
+ * Shows the pack reveal modal with the given pokemon
+ * @param {pokemon} pokemon 
+ * @returns 
+ */
 function showPackReveal(pokemon) {
-    // TODO: Mostra #pack-reveal rimuovendo classe hidden
-    // TODO: Popola #reveal-content con card Pokemon
-    // TODO: Aggiungi animazione di reveal
-    // pokemon: oggetto con dati Pokemon (name, sprite, stats, type)
 
     const packReveal = document.getElementById('pack-reveal');
     const revealContent = document.getElementById('reveal-content');
-    revealContent.innerHTML = ''; // Pulisce contenuto precedente
+    revealContent.innerHTML = ''; 
     const pokemonCard = CreateCard(pokemon);
     revealContent.appendChild(pokemonCard);
     packReveal.classList.remove('hidden');
@@ -215,9 +226,10 @@ function showPackReveal(pokemon) {
 
 }
 
+/**
+ * Closes the pack reveal modal
+ */
 function closePackReveal() {
-    // TODO: Nasconde #pack-reveal aggiungendo classe hidden
-    // TODO: Aggiorna renderInventory() se necessario
     const packReveal = document.getElementById('pack-reveal');
     packReveal.classList.add('hidden');
 
@@ -229,13 +241,10 @@ function closePackReveal() {
 
 
 // ===== INVENTORY =====
-
+/**
+ * Renders the inventory page with all pokemons owned
+ */
 function renderInventory() {
-    // TODO: Svuota #pokemon-grid
-    // TODO: Se gameState.inventory vuoto, mostra messaggio vuoto
-    // TODO: Per ogni Pokemon in inventory, crea card HTML
-    // TODO: Usa template card commentato come riferimento
-    // TODO: Aggiungi classe 'legendary' se Pokemon leggendario
     const emptyPokemonMessage = document.getElementById('empty-message');
     if(gameState.inventory.length == 0){
         emptyPokemonMessage.classList.remove('hidden');
@@ -251,20 +260,21 @@ function renderInventory() {
         });
     }
 }
+/**
+ * Creates an empty message element for the inventory grid
+ * @returns 
+ */
 function createEmptyMessagge(){
     let message = document.createElement("div");
     message.setAttribute('id','empty-message');
     message.classList.add("hidden","empty-message");
     return message;
 }
+/**
+ * Manages selection of a pokemon for battle team
+ * @param {int} pokemonId 
+ */
 export function selectForBattle(pokemonId) {
-    // TODO: Trova Pokemon in gameState.inventory per ID
-    // TODO: Controlla se team ha slot liberi (max 3)
-    // TODO: Se slot libero, aggiungi a gameState.activeTeam
-    // TODO: Aggiorna visualizzazione #active-team
-    // TODO: Se gia nel team, mostra messaggio errore
-    // pokemonId: number/string - ID univoco del Pokemon
-
     let selectedPokemon = gameState.inventory.find(p => p.id == pokemonId);
     if(selectedPokemon) {
         if(gameState.activeTeam.includes(selectedPokemon)) {
@@ -282,20 +292,19 @@ export function selectForBattle(pokemonId) {
     }
     saveGame();
 }
-
+/**
+ * Removes a pokemon from active team by its id
+ * @param {int} pokemonId 
+ */
 export function removeFromTeam(pokemonId) {
-    // TODO: Trova e rimuovi Pokemon da gameState.activeTeam
-    // TODO: Aggiorna visualizzazione #active-team
-    // pokemonId: number/string
     gameState.activeTeam = gameState.activeTeam.filter(p => p.id != pokemonId);
     saveGame();
     renderActiveTeam();
 }
-
+/**
+ * Renders the active team in inventory page
+ */
 function renderActiveTeam() {
-    // TODO: Aggiorna i 3 slot in #active-team
-    // TODO: Per slot vuoti, mostra placeholder
-    // TODO: Per slot pieni, mostra mini-card con pulsante rimuovi
     const activeTeamContainer = document.getElementById('active-team');
     activeTeamContainer.innerHTML = ''; 
     for(let i = 0; i < 3; i++) {
