@@ -1,7 +1,7 @@
 import { fetchPackOfPokemon } from './pullPokemon.mjs';
 import { fetchOneRandomPokemon } from './pullPokemon.mjs';
 import { createPokemonFromAPIData } from './pullPokemon.mjs';
-
+import {pullLegendaryPokemon} from './pullPokemon.mjs';
 import { CreateCard } from './pokemon.mjs';
 import { CreateMiniCard } from './pokemon.mjs';
 import { createElement } from 'https://cdn.skypack.dev/react';
@@ -11,7 +11,7 @@ import { createElement } from 'https://cdn.skypack.dev/react';
 import pokemon from "./pokemon.mjs";
 
 let gameState = {
-    coins: 500,
+    coins: 50000,
     inventory: [],
     activeTeam: [],
     currentBattle: null
@@ -74,6 +74,8 @@ function showPage(pageId) {
     
     savePageState(pageId);
     const pages = document.querySelectorAll('.page');
+    const btnBuyCoin = document.getElementById('buy-coin-button');
+    btnBuyCoin.classList.add('hidden');
     pages.forEach(page => {
         page.classList.add('hidden');
     });
@@ -89,7 +91,9 @@ function showPage(pageId) {
             case 'page-battle':
                 startBattle();
                 break;
-
+            case 'page-shop':
+                btnBuyCoin.classList.remove('hidden');
+                break;
         }
         
 
@@ -126,12 +130,15 @@ function spendCoins(amount) {
 function updateCoinDisplay() {
     const coinCounter = document.getElementById('coin-counter');
     const shopCoinDisplay = document.getElementById('shop-coin-display');
-
+    const gamblingCoinDisplay = document.getElementById('gambling-coin-display');   
     if (shopCoinDisplay) {
         shopCoinDisplay.textContent = gameState.coins;
     }
     if (coinCounter) {
         coinCounter.textContent = gameState.coins;
+    }
+    if (gamblingCoinDisplay) {
+        gamblingCoinDisplay.textContent = gameState.coins;
     }
 }
 
@@ -139,8 +146,6 @@ function updateCoinDisplay() {
 // ===== SHOP =====
 
 async function buyPack(packType) {
-    // TODO: Determina costo (base=100, legendary=2000)
-    // TODO: Chiama spendCoins() per verificare/sottrarre
     // TODO: Se successo, genera Pokemon random:
     //       - base: Pokemon comune (ID 1-151 esclusi leggendari)
     //       - legendary: Pokemon leggendario (es: 144,145,146,150,151,etc)
@@ -150,22 +155,43 @@ async function buyPack(packType) {
     // TODO: Aggiorna #last-pokemon
     // packType: 'base' o 'legendary'
     const packBaseCost = 250;
-    const packLegendaryCost = 2000;
-    if(spendCoins(packType === 'base' ? packBaseCost : packLegendaryCost)){
-        console.log("Pack acquistato: " + packType);
-        let pokemonEstratti = await fetchPackOfPokemon(3);
-        console.log(pokemonEstratti);
+    const packLegendaryCost = 2500;
+    switch (packType) {
+        case 'base':
+
+            pullPack(packBaseCost, 3, packType);
+            break;
+
+        case 'legendary':
+            
+            pullPack(packLegendaryCost, 1, packType);
+            break;        
+    }
+    saveGame();
+}
+
+
+async function pullPack(cost,numberOfPokemon, packType){
+    let hasMoney = false;
+    hasMoney = spendCoins(cost);
+    let pokemonEstratti = [];
+    if(hasMoney){
+        if(packType == 'legendary'){
+            pokemonEstratti = await pullLegendaryPokemon();
+            console.log("Legendary acquistato: " + pokemonEstratti);
+        }
+        else{
+            console.log("Pack acquistato: " + packType);
+            pokemonEstratti = await fetchPackOfPokemon(numberOfPokemon);
+            console.log(pokemonEstratti);
+        }
         for(let p of pokemonEstratti){
             gameState.inventory.push(p);
             await showPackReveal(p);
             console.log(gameState.inventory);
         }
-        saveGame();
     }
-    
-
 }
-
 function showPackReveal(pokemon) {
     // TODO: Mostra #pack-reveal rimuovendo classe hidden
     // TODO: Popola #reveal-content con card Pokemon
@@ -287,6 +313,7 @@ function renderActiveTeam() {
 // ===== BATTLE =====
 
 async function startBattle() {
+    disableBtnMoves();
     let json = JSON.parse(localStorage.getItem('gameState'));   
     let state = {
         'playerTeam' : [],
@@ -302,6 +329,7 @@ async function startBattle() {
     else{
         let enemies = [];
             enemies = await fetchPackOfPokemon(6);
+            enableBtnMoves();
             state['enemyTeam'] = enemies;
             let copyTeam = json.activeTeam.slice()  
             state['playerTeam'] = copyTeam;
@@ -405,7 +433,10 @@ async function useMove(moveIndex) {
         } 
         else {
             saveBattleState(json);
-            await randomPokemonOnTeam(json);
+            if(json.playerTeam.length < 5){
+                await randomPokemonOnTeam(json);
+            }   
+            saveBattleState(json);
             console.log("stato dopo possibile aggiunta pokemon 2", json);
             pkmCPU = json.enemyTeam[switchPokemon(json.enemyTeam, true)];
             
@@ -703,6 +734,13 @@ function getTypeColor(type) {
     // return: string (es: 'type-fire')
 }
 
+
+// TODO: Funzione per acquistare monete 
+function buyCoins(packType) {
+    
+}
+
+
 // ===== ESPONE LE FUNZIONI A LIVELLO GLOBALE  =====
 window.showPage = showPage;
 window.buyPack = buyPack;
@@ -712,4 +750,3 @@ window.closePackReveal = closePackReveal;
 window.closeVictoryBanner = closeVictoryBanner;
 window.closeDefeatBanner = closeDefeatBanner;
 window.closeSwitchModal = closeSwitchModal;
-
