@@ -2,7 +2,7 @@
 
 Ecco il diagramma di Gantt del nostro progetto:
 
-```mermaid
+<div class="mermaid">
 gantt
     title Progetto: Pokémon Battle Sim
     dateFormat  YYYY-MM-DD
@@ -33,3 +33,14 @@ gantt
     section Chiusura Progetto
     Integrazione Shop (Team):t10, 2026-01-20, 3d
     Final Polish & Deploy (Team)  :t11, 2026-01-23, 2d
+</div>
+
+<!-- Script per trasformare il testo sopra in un grafico reale -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ 
+    startOnLoad: true,
+    theme: 'default',
+    securityLevel: 'loose'
+  });
+</script>
