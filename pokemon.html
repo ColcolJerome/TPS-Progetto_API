@@ -149,65 +149,67 @@
                         <p class="coin-warning">NON ABBASTANZA? COMPRA ORA!</p>
                     </div>
                     
-                    <div class="coin-packs-container">
-                        <!-- Pacchetto Piccolo -->
-                        <div class="coin-pack pack-small" onclick="buyCoins('small')">
-                            <div class="pack-glow"></div>
-                            <div class="coin-pack-image">
-                                <span class="coin-icon">💰</span>
+                    <div class="coin-packs-scroll-container">
+                        <div class="coin-packs-container">
+                            <!-- Pacchetto Piccolo -->
+                            <div class="coin-pack pack-small" onclick="buyCoins('small')">
+                                <div class="pack-glow"></div>
+                                <div class="coin-pack-image">
+                                    <span class="coin-icon">💰</span>
+                                </div>
+                                <h3 class="coin-pack-title">STARTER</h3>
+                                <p class="coin-amount">500 MONETE</p>
+                                <p class="coin-pack-desc">Inizia a vincere!</p>
+                                <span class="coin-pack-price">€2.99</span>
+                                <button class="btn-buy btn-buy-small" onclick="buyCoins('small'); event.stopPropagation();">COMPRA SUBITO!</button>
                             </div>
-                            <h3 class="coin-pack-title">STARTER</h3>
-                            <p class="coin-amount">500 MONETE</p>
-                            <p class="coin-pack-desc">Inizia a vincere!</p>
-                            <span class="coin-pack-price">€2.99</span>
-                            <button class="btn-buy btn-buy-small" onclick="buyCoins('small'); event.stopPropagation();">COMPRA SUBITO!</button>
-                        </div>
-                        
-                        <!-- Pacchetto Medio - BEST VALUE -->
-                        <div class="coin-pack pack-medium best-value" onclick="buyCoins('medium')">
-                            <div class="best-value-badge">MIGLIORE AFFARE!</div>
-                            <div class="pack-glow pack-glow-intense"></div>
-                            <div class="coin-pack-image">
-                                <span class="coin-icon coin-icon-big">💰💰</span>
+                            
+                            <!-- Pacchetto Medio - BEST VALUE -->
+                            <div class="coin-pack pack-medium best-value" onclick="buyCoins('medium')">
+                                <div class="best-value-badge">MIGLIORE AFFARE!</div>
+                                <div class="pack-glow pack-glow-intense"></div>
+                                <div class="coin-pack-image">
+                                    <span class="coin-icon coin-icon-big">💰💰</span>
+                                </div>
+                                <h3 class="coin-pack-title">POPOLARE</h3>
+                                <p class="coin-amount">1500 MONETE</p>
+                                <p class="coin-bonus">+300 BONUS!</p>
+                                <p class="coin-pack-desc">Il preferito dai giocatori!</p>
+                                <span class="coin-pack-price">€7.99</span>
+                                <span class="coin-pack-old-price">€9.99</span>
+                                <button class="btn-buy btn-buy-medium" onclick="buyCoins('medium'); event.stopPropagation();">APPROFITTA ORA!</button>
                             </div>
-                            <h3 class="coin-pack-title">POPOLARE</h3>
-                            <p class="coin-amount">1500 MONETE</p>
-                            <p class="coin-bonus">+300 BONUS!</p>
-                            <p class="coin-pack-desc">Il preferito dai giocatori!</p>
-                            <span class="coin-pack-price">€7.99</span>
-                            <span class="coin-pack-old-price">€9.99</span>
-                            <button class="btn-buy btn-buy-medium" onclick="buyCoins('medium'); event.stopPropagation();">APPROFITTA ORA!</button>
-                        </div>
-                        
-                        <!-- Pacchetto Grande -->
-                        <div class="coin-pack pack-large" onclick="buyCoins('large')">
-                            <div class="pack-glow pack-glow-gold"></div>
-                            <div class="coin-pack-image">
-                                <span class="coin-icon coin-icon-huge">💰💰💰</span>
+                            
+                            <!-- Pacchetto Grande -->
+                            <div class="coin-pack pack-large" onclick="buyCoins('large')">
+                                <div class="pack-glow pack-glow-gold"></div>
+                                <div class="coin-pack-image">
+                                    <span class="coin-icon coin-icon-huge">💰💰💰</span>
+                                </div>
+                                <h3 class="coin-pack-title gold-text">MEGA PACK</h3>
+                                <p class="coin-amount gold-text">3500 MONETE</p>
+                                <p class="coin-bonus gold-bonus">+1000 BONUS!</p>
+                                <p class="coin-pack-desc">Per i veri campioni!</p>
+                                <span class="coin-pack-price">€14.99</span>
+                                <span class="coin-pack-old-price">€19.99</span>
+                                <button class="btn-buy btn-buy-large" onclick="buyCoins('large'); event.stopPropagation();">DIVENTA LEGGENDA!</button>
                             </div>
-                            <h3 class="coin-pack-title gold-text">MEGA PACK</h3>
-                            <p class="coin-amount gold-text">3500 MONETE</p>
-                            <p class="coin-bonus gold-bonus">+1000 BONUS!</p>
-                            <p class="coin-pack-desc">Per i veri campioni!</p>
-                            <span class="coin-pack-price">€14.99</span>
-                            <span class="coin-pack-old-price">€19.99</span>
-                            <button class="btn-buy btn-buy-large" onclick="buyCoins('large'); event.stopPropagation();">DIVENTA LEGGENDA!</button>
-                        </div>
-                        
-                        <!-- Pacchetto SUPREMO -->
-                        <div class="coin-pack pack-supreme" onclick="buyCoins('supreme')">
-                            <div class="supreme-badge">OFFERTA ESCLUSIVA!</div>
-                            <div class="pack-glow pack-glow-rainbow"></div>
-                            <div class="coin-pack-image">
-                                <span class="coin-icon coin-icon-rainbow">💎💰💎</span>
+                            
+                            <!-- Pacchetto SUPREMO -->
+                            <div class="coin-pack pack-supreme" onclick="buyCoins('supreme')">
+                                <div class="supreme-badge">OFFERTA ESCLUSIVA!</div>
+                                <div class="pack-glow pack-glow-rainbow"></div>
+                                <div class="coin-pack-image">
+                                    <span class="coin-icon coin-icon-rainbow">💎💰💎</span>
+                                </div>
+                                <h3 class="coin-pack-title supreme-text">SUPREMO</h3>
+                                <p class="coin-amount supreme-text">10000 MONETE</p>
+                                <p class="coin-bonus supreme-bonus">+3000 BONUS!</p>
+                                <p class="coin-pack-desc supreme-desc">DIVENTA IMBATTIBILE!</p>
+                                <span class="coin-pack-price supreme-price">€39.99</span>
+                                <span class="coin-pack-old-price">€59.99</span>
+                                <button class="btn-buy btn-buy-supreme" onclick="buyCoins('supreme'); event.stopPropagation();">ACQUISTA E DOMINA!</button>
                             </div>
-                            <h3 class="coin-pack-title supreme-text">SUPREMO</h3>
-                            <p class="coin-amount supreme-text">10000 MONETE</p>
-                            <p class="coin-bonus supreme-bonus">+3000 BONUS!</p>
-                            <p class="coin-pack-desc supreme-desc">DIVENTA IMBATTIBILE!</p>
-                            <span class="coin-pack-price supreme-price">€39.99</span>
-                            <span class="coin-pack-old-price">€59.99</span>
-                            <button class="btn-buy btn-buy-supreme" onclick="buyCoins('supreme'); event.stopPropagation();">ACQUISTA E DOMINA!</button>
                         </div>
                     </div>
                     
@@ -224,6 +226,9 @@
                     <div class="page-footer">
                         <button class="btn-ds btn-gray" onclick="showPage('page-shop')">
                             Torna al negozio
+                        </button>
+                        <button class="btn-ds btn-gold btn-gold-pulse" onclick="buyCoins('medium')">
+                            COMPRA IL PIÙ VENDUTO!
                         </button>
                     </div>
                 </div>
