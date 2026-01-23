@@ -1,7 +1,7 @@
 import { fetchPackOfPokemon } from './pullPokemon.mjs';
 import { fetchOneRandomPokemon } from './pullPokemon.mjs';
 import { createPokemonFromAPIData } from './pullPokemon.mjs';
-
+import {pullLegendaryPokemon} from './pullPokemon.mjs';
 import { CreateCard } from './pokemon.mjs';
 import { CreateMiniCard } from './pokemon.mjs';
 import { createElement } from 'https://cdn.skypack.dev/react';
@@ -74,6 +74,8 @@ function showPage(pageId) {
     
     savePageState(pageId);
     const pages = document.querySelectorAll('.page');
+    const btnBuyCoin = document.getElementById('buy-coin-button');
+    btnBuyCoin.classList.add('hidden');
     pages.forEach(page => {
         page.classList.add('hidden');
     });
@@ -89,7 +91,9 @@ function showPage(pageId) {
             case 'page-battle':
                 startBattle();
                 break;
-
+            case 'page-shop':
+                btnBuyCoin.classList.remove('hidden');
+                break;
         }
         
 
@@ -149,24 +153,16 @@ async function buyPack(packType) {
     // packType: 'base' o 'legendary'
     const packBaseCost = 250;
     const packLegendaryCost = 2000;
-    const packStarterCost = 1200;
     switch (packType) {
         case 'base':
 
-            pullPack(packBaseCost, 1, packType);
+            pullPack(packBaseCost, 3, packType);
             break;
 
         case 'legendary':
             
             pullPack(packLegendaryCost, 1, packType);
-            break;
-
-        case 'starter':
-
-            pullPack(packStarterCost, 5, packType);
-            break;
-    
-        
+            break;        
     }
     saveGame();
 }
@@ -176,20 +172,21 @@ async function pullPack(cost,numberOfPokemon, packType){
     let hasMoney = false;
     hasMoney = spendCoins(cost);
     if(hasMoney){
-        console.log("Pack acquistato: " + packType);
-        let pokemonEstratti = await fetchPackOfPokemon(numberOfPokemon);
-        console.log(pokemonEstratti);
+        if(packType == 'legendary'){
+            let pokemonEstratti = await pullLegendaryPokemon(cost);
+        }
+        else{
+            console.log("Pack acquistato: " + packType);
+            let pokemonEstratti = await fetchPackOfPokemon(numberOfPokemon);
+            console.log(pokemonEstratti);
+        }
         for(let p of pokemonEstratti){
             gameState.inventory.push(p);
             await showPackReveal(p);
             console.log(gameState.inventory);
         }
     }
-    
-
 }
-
-
 function showPackReveal(pokemon) {
     // TODO: Mostra #pack-reveal rimuovendo classe hidden
     // TODO: Popola #reveal-content con card Pokemon

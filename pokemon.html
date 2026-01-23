@@ -13,9 +13,16 @@
     <!-- ===== HEADER ===== -->
     <header id="game-header">
         <h1 class="game-title">POKEMON BATTLE</h1>
+
+        <button class="buycoin-display" id="buy-coin-button" onclick="showPage('page-compramonete')">
+            COMPRA MONETE
+        </button>
+
         <div class="coin-display">
             <span id="coin-counter"></span>
+            
         </div>
+
     </header>
 
     <!-- ===== MAIN CONTAINER ===== -->
@@ -115,22 +122,11 @@
                             <p class="pack-desc">1 Pokemon leggendario garantito!</p>
                             <span class="pack-price">2000</span>
                         </div> 
-
-                        <!-- Pacchetto Starter -->
-                        <div class="pack pack-starter" onclick="buyPack('starter')">
-                            <div class="pack-image"></div>
-                            <h3 class="pack-title">PACCHETTO STARTER</h3>
-                            <p class="pack-desc">5 Pokemon di alto livello</p>
-                            <span class="pack-price">1200</span>
-                        </div>
                     </div>
                     
                     <div class="page-footer">
                         <button class="btn-ds btn-gray" onclick="showPage('page-menu')">
                             TORNA AL MENU
-                        </button>
-                        <button class="btn-ds btn-gold" onclick="showPage('page-compramonete')">
-                            COMPRA MONETE!
                         </button>
                     </div>
                 </div>
@@ -228,9 +224,6 @@
                     <div class="page-footer">
                         <button class="btn-ds btn-gray" onclick="showPage('page-shop')">
                             Torna al negozio
-                        </button>
-                        <button class="btn-ds btn-gold btn-gold-pulse" onclick="buyCoins('medium')">
-                            COMPRA IL PIÙ VENDUTO!
                         </button>
                     </div>
                 </div>
