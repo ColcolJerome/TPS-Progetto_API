@@ -62,8 +62,11 @@ function loadGame() {
         return false;
     }
 }
-
-function saveBattleState(battleState){
+/**
+ * saves battle state in local storage
+ * @param {json} battleState 
+ */
+function saveBattleState(battleState){ //smh the above comment is useless
     localStorage.setItem( 'state' , JSON.stringify(battleState))
 }
 
@@ -285,10 +288,12 @@ function renderActiveTeam() {
 
 
 // ===== BATTLE =====
-
+/**
+ * starts the battle state
+ */
 async function startBattle() {
     let json = JSON.parse(localStorage.getItem('gameState')); 
-      
+
     let state = {
         'playerTeam' : [],
         'enemyTeam' : [],
@@ -321,16 +326,26 @@ async function startBattle() {
             saveBattleState(state); 
     }
 }
+/**
+ * disables moves buttons
+ */
 function disableBtnMoves(){
     document.querySelectorAll('.move-btn').forEach((button) => {
         button.disabled = true;
     });
 }
+/**
+ * enables moves buttons
+ */
 function enableBtnMoves(){
     document.querySelectorAll('.move-btn').forEach((button) => {
         button.disabled = false;
     });
 }
+/**
+ * renders on screen the sprite, name, current hp and max hp of the player's pokemon
+ * @param {pokemon} pokemon 
+ */
 function renderPLA(pokemon){
     console.log("render pla", pokemon);
     updateHPBar('player-hp-bar', pokemon.currentHP, pokemon.maxHP);
@@ -350,6 +365,10 @@ function renderPLA(pokemon){
     }
     renderMoveButtons(pokemon);
 }
+/**
+ * renders on screen the sprite, name, current hp and max hp of the enemy's pokemon
+ * @param {pokemon} pokemon 
+ */
 function renderCPU(pokemon){
     console.log("render cpu", pokemon);
     updateHPBar('enemy-hp-bar', pokemon.currentHP, pokemon.maxHP);
@@ -363,7 +382,10 @@ function renderCPU(pokemon){
     CPUmaxHP.textContent = pokemon.maxHP;
     CPUimg.src = pokemon.frontSprite;
 }
-
+/**
+ * shows the pokemon's moves names in the buttons dedicated to them
+ * @param {pokemon} pokemon 
+ */
 function renderMoveButtons(pokemon){
     document.querySelectorAll('.move-btn').forEach((button, index) => {
         if(pokemon.moves[index]){
@@ -375,6 +397,10 @@ function renderMoveButtons(pokemon){
         }}
     );
 }
+/**
+ * manages not only the usage of the moves but also the entire battle system
+ * @param {int} moveIndex 
+ */
 async function useMove(moveIndex) {
     let state = JSON.parse(localStorage.getItem('state'));
     
@@ -453,8 +479,11 @@ async function useMove(moveIndex) {
         enableBtnMoves();
     }, 1000);
 }
-
-async function randomPokemonOnTeam(json) { 
+/**
+ * has 20% chance that a random pokemon gets added to your team after defeating an enemy pokemon
+ * @param {json} state 
+ */
+async function randomPokemonOnTeam(state) { 
     let findRandomPokemonPercentage = 0.20;
     let random = Math.random();
     console.log("random nunmber:", random);
@@ -462,16 +491,25 @@ async function randomPokemonOnTeam(json) {
         let randomPokemon = await createPokemonFromAPIData(await fetchOneRandomPokemon());
         addBattleLog(`${randomPokemon.name} si è aggiunto al team!`);
         console.log("adding pokemon to team:", randomPokemon);
-        json.playerTeam.push(randomPokemon);
-        console.log("battlestate:", json);
+        state.playerTeam.push(randomPokemon);
+        console.log("battlestate:", state);
     }
-    saveBattleState(json);
-    console.log("stato dopo il possibile aggiunta pokemon 1", json);
+    saveBattleState(state);
+    console.log("stato dopo il possibile aggiunta pokemon 1", state);
 }
+/**
+ * checks if the pokemon is dead, you need to pass the pokemon current HP
+ * @param {int} hp 
+ * @returns bool
+ */
 function isFainted(hp){
     return hp <= 0;
 }
-
+/**
+ * checks if all pokemon of the selected team are dead
+ * @param {pokemon} attacker 
+ * @returns bool
+ */
 function checkWin(attacker){
     let counter = 0
     attacker.forEach(pokemon => {
@@ -481,7 +519,13 @@ function checkWin(attacker){
     });
     return counter == attacker.length
 }
-
+/**
+ * calculate amount of damage dealt, also checks the STAB and effectiveness of the move
+ * @param {pokemon} attacker 
+ * @param {pokemon} defender 
+ * @param {move} move 
+ * @returns int
+ */
 function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chiesto al chat :)
     let attackStat = move.category.name === "physical"
     ? attacker.attack
@@ -511,7 +555,20 @@ function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chie
 
     return Math.floor(baseDamage);
 }
-
+/**
+ * returns type effectiveness of the move on the enemy pokemon
+ * 
+ * values returned:
+ * - 0
+ * - 0.25
+ * - 0.5
+ * - 1
+ * - 2
+ * - 4
+ * @param {move} type 
+ * @param {pokemon} defenderType 
+ * @returns int
+ */
 function getTypeEffectiveness(type, defenderType) { // fatto con il chat :) type, defenderTyp
     const TYPE_CHART = {
         "normal": { "rock": 0.5, "ghost": 0, "steel": 0.5 },
@@ -543,7 +600,12 @@ function getTypeEffectiveness(type, defenderType) { // fatto con il chat :) type
     
     return listDmg.reduce((a, b) => a * b, 1); //does the avarage of tipings (ex. 2x and 0.5x makes 1x)
 }
-
+/**
+ * updates the visuals for the hp bar of inbattle pokemons
+ * @param {string} elementId 
+ * @param {pokemon} currentHP 
+ * @param {pokemon} maxHP 
+ */
 function updateHPBar(elementId, currentHP, maxHP) {
     console.log("Updating HP Bar:", elementId, currentHP, maxHP);
     let percent = (currentHP / maxHP) * 100;
@@ -568,7 +630,10 @@ function updateHPBar(elementId, currentHP, maxHP) {
     }
 
 }
-
+/**
+ * shows battle log message in battle
+ * @param {string} message 
+ */
 function addBattleLog(message) {
     let log = document.getElementById('battle-log');
     log.innerHTML = ``;
@@ -576,7 +641,14 @@ function addBattleLog(message) {
     p.textContent = message;
     log.appendChild(p);
 }
-
+/**
+ * - if cpuFeinted is true, makes the CPU pokemon switch 
+ * - shows switchable pokemons in team during battle
+ * - if nullable is true, hides the possibility to close the switchPokemon page
+ * @param {bool} cpuFeinted 
+ * @param {bool} nullable 
+ * @returns int
+ */
 function switchPokemon(cpuFeinted = false,nullable=true) {
     let state = JSON.parse(localStorage.getItem('state'));
 
@@ -611,7 +683,10 @@ function switchPokemon(cpuFeinted = false,nullable=true) {
 
     }
 }
-
+/**
+ * makes the player switch pokemon
+ * @param {int} pokemonIndex 
+ */
 export function selectSwitchPokemon(pokemonIndex) {
     let state = JSON.parse(localStorage.getItem('state'));
     let switchmodal = document.getElementById('switch-modal');
@@ -619,7 +694,7 @@ export function selectSwitchPokemon(pokemonIndex) {
     state.playerTeam.forEach(pokemon => {
         if(pokemon.id == pokemonIndex){
             if (!isFainted(pokemon.currentHP) || pokemon.id == state.activePokemonPLA.id){
-                console.log("boutta change pokemon")
+                console.log("boutta change pokemon") //gotta love writing debugging messages
                 state.activePokemonPLA = pokemon;
             }else{
                 alert("non puoi selezionare questo pokemon")
@@ -633,34 +708,44 @@ export function selectSwitchPokemon(pokemonIndex) {
 
     saveBattleState(state);
 }
-
+/**
+ * closes switch page
+ */
 function closeSwitchModal() {
     let swichmodal = document.getElementById('switch-modal')
     swichmodal.classList.add('hidden');
 }
-
+/**
+ * shows winning page
+ */
 function onBattleWin() {
     console.log("hai vinto la battaglia");
     let winPage = document.getElementById('victory-banner');
     winPage.classList.remove('hidden');
-    console.log("Elemento banner trovato?", winPage);
+    console.log("Elemento banner trovato?", winPage); //totally useless debugging message imo
     addCoins(100);
     saveGame();
 }
-
+/**
+ * closes victory page
+ */
 function closeVictoryBanner() {
     let lossPage = document.getElementById('victory-banner')
     lossPage.classList.add('hidden');
     showPage('page-menu');
 }
-
+/**
+ * shows lose page
+ */
 function onBattleLose() {
     console.log("hai perso la battaglia");
     let lossPage = document.getElementById('defeat-banner');
     lossPage.classList.remove('hidden');
 }
-
-function closeDefeatBanner() {
+/**
+ * closes lose page
+ */
+function closeDefeatBanner() { //smh bro why do we calling the losing page in 20 different ways
     let lossPage = document.getElementById('defeat-banner')
     lossPage.classList.add('hidden');
     showPage('page-menu');
