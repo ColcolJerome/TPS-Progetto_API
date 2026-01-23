@@ -47,15 +47,12 @@ function savePageState(pageId){
  * saves game state in local storage
  */
 function saveGame() {
-    // TODO: Salva gameState in localStorage
     localStorage.setItem('gameState', JSON.stringify(gameState));
 }
 /** 
  * loads game state from local storage
 */
 function loadGame() {
-    // TODO: Carica gameState da localStorage
-    // TODO: Ritorna true se dati trovati, false altrimenti
     let savedState = localStorage.getItem('gameState');
     if(savedState) {
         gameState = JSON.parse(savedState);
@@ -461,8 +458,8 @@ async function useMove(moveIndex) {
     
     if (isFainted(pkmCPU.currentHP)){
         console.log("pokemon cpu fainted", pkmCPU);
-        addBattleLog(`${pkmCPU.name} è stato sconfitto! rimangono ${json.enemyTeam.length - checkWin(json.enemyTeam, true)}`);
-        let win = checkWin(json.enemyTeam);
+        addBattleLog(`${pkmCPU.name} è stato sconfitto! rimangono ${state.enemyTeam.length - checkWin(state.enemyTeam, true)}`);
+        let win = checkWin(state.enemyTeam);
         if (win){
             onBattleWin();
         } 
@@ -498,8 +495,8 @@ async function useMove(moveIndex) {
         updateHPBar('player-hp-bar', pkmPLA.currentHP, pkmPLA.maxHP);
 
         if (isFainted(pkmPLA.currentHP)){
-            addBattleLog(`${pkmCPU.name} è stato sconfitto! rimangono ${json.playerTeam.lenght - checkWin(json.playerTeam, true)}`);
-            let loss = checkWin(json.playerTeam);
+            addBattleLog(`${pkmCPU.name} è stato sconfitto! rimangono ${state.playerTeam.lenght - checkWin(state.playerTeam, true)}`);
+            let loss = checkWin(state.playerTeam);
             console.log("loss condition", loss);
             if (loss){
                 onBattleLose();
@@ -547,7 +544,7 @@ function isFainted(hp){
  * @param {pokemon} attacker 
  * @returns bool
  */
-function checkWin(attacker){
+function checkWin(attacker, forNum=false){
     let counter = 0
     attacker.forEach(pokemon => {
         if (isFainted(pokemon.currentHP)){
@@ -609,7 +606,7 @@ function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chie
  * @param {pokemon} defenderType 
  * @returns int
  */
-function getTypeEffectiveness(type, defenderType) { // fatto con il chat :) type, defenderTyp
+function getTypeEffectiveness(type, defenderType) { // fatto con il chat :)
     const TYPE_CHART = {
         "normal": { "rock": 0.5, "ghost": 0, "steel": 0.5 },
         "fire": { "grass": 2, "ice": 2, "bug": 2, "steel": 2, "fire": 0.5, "water": 0.5, "rock": 0.5, "dragon": 0.5 },
