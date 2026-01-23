@@ -29,15 +29,3 @@ gantt
     Integrazione Shop (Team)     :t10, 2026-01-20, 3d
     Final Polish e Deploy (Team)  :t11, 2026-01-23, 2d
 ```
-
-<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-mermaid.initialize({ startOnLoad: true }); // Questo pezzetto serve per far capire a JSDoc che deve renderizzare il blocco sopra
-setTimeout(() => { document.querySelectorAll('pre code.language-mermaid').forEach((el) => { const graphDefinition = el.innerText;
-const container = document.createElement('div');
-container.className = 'mermaid';
-container.textContent = graphDefinition;
-el.parentNode.replaceWith(container);
-mermaid.run();
-});
-}, 500);
-</script>
