@@ -11,7 +11,7 @@ import { createElement } from 'https://cdn.skypack.dev/react';
 import pokemon from "./pokemon.mjs";
 
 let gameState = {
-    coins: 50000,
+    coins: 500,
     inventory: [],
     activeTeam: [],
     currentBattle: null
