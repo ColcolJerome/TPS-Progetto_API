@@ -22,11 +22,6 @@ let packRevealPromise = null;
 // ===== INITIALIZATION =====
 
 document.addEventListener('DOMContentLoaded', function() {
-    // TODO: Inizializza gameState con valori default
-    // TODO: Carica dati salvati da localStorage se esistono
-    // TODO: Imposta monete iniziali a 500
-    // TODO: Chiama updateCoinDisplay()
-    // TODO: Mostra pagina menu
     if(!loadGame()){
         saveGame();
     }
@@ -41,16 +36,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ===== LOCAL STORAGE =====
-
+/**
+ * saves current page in local storage
+ * @param {string} pageId 
+ */
 function savePageState(pageId){
     localStorage.setItem('page', pageId);
 }
-
+/**
+ * saves game state in local storage
+ */
 function saveGame() {
     // TODO: Salva gameState in localStorage
     localStorage.setItem('gameState', JSON.stringify(gameState));
 }
-
+/** 
+ * loads game state from local storage
+*/
 function loadGame() {
     // TODO: Carica gameState da localStorage
     // TODO: Ritorna true se dati trovati, false altrimenti
@@ -62,13 +64,19 @@ function loadGame() {
         return false;
     }
 }
-
-function saveBattleState(battleState){
+/**
+ * saves battle state in local storage
+ * @param {json} battleState 
+ */
+function saveBattleState(battleState){ //smh the above comment is useless
     localStorage.setItem( 'state' , JSON.stringify(battleState))
 }
 
 // ===== NAVIGATION =====
-
+/**
+ * Shows a specific page and hides all others
+ * @param {string} pageId 
+ */
 function showPage(pageId) {
     // pageId: page-menu, page-inventory, page-shop, page-battle
     
@@ -103,19 +111,21 @@ function showPage(pageId) {
 }
 
 // ===== COIN MANAGEMENT =====
-
+/**
+ * Adds coins to the player's total
+ * @param {int} amount 
+ */
 function addCoins(amount) {
     gameState.coins += amount;
     updateCoinDisplay();
 }
 
+/**
+ * Checks if the player has enough coins to spend and deducts them
+ * @param {int} amount 
+ * @returns 
+ */
 function spendCoins(amount) {
-    // TODO: Controlla se gameState.coins >= amount
-    // TODO: Se si, sottrae e ritorna true
-    // TODO: Se no, ritorna false (mostrare messaggio errore?)
-    // amount: number (100 per base, 2000 per legendary)
-    // return: boolean
-
     if(gameState.coins >= amount){
         gameState.coins -= amount;
         updateCoinDisplay();
@@ -126,7 +136,9 @@ function spendCoins(amount) {
         return false;
     }
 }
-
+/**
+ * Updates all coin displays in the game
+ */
 function updateCoinDisplay() {
     const coinCounter = document.getElementById('coin-counter');
     const shopCoinDisplay = document.getElementById('shop-coin-display');
@@ -145,15 +157,11 @@ function updateCoinDisplay() {
 
 // ===== SHOP =====
 
+/**
+ * Manages the buying of a pack of pokemons
+ * @param {string} packType 
+ */
 async function buyPack(packType) {
-    // TODO: Se successo, genera Pokemon random:
-    //       - base: Pokemon comune (ID 1-151 esclusi leggendari)
-    //       - legendary: Pokemon leggendario (es: 144,145,146,150,151,etc)
-    // TODO: Chiama API PokeAPI per ottenere dati Pokemon
-    // TODO: Aggiungi Pokemon a gameState.inventory
-    // TODO: Chiama showPackReveal() con dati Pokemon
-    // TODO: Aggiorna #last-pokemon
-    // packType: 'base' o 'legendary'
     const packBaseCost = 250;
     const packLegendaryCost = 2500;
     switch (packType) {
@@ -170,7 +178,12 @@ async function buyPack(packType) {
     saveGame();
 }
 
-
+/**
+ * Manages the pulling of a pack of pokemons
+ * @param {int} cost 
+ * @param {int} numberOfPokemon 
+ * @param {string} packType 
+ */
 async function pullPack(cost,numberOfPokemon, packType){
     let hasMoney = false;
     hasMoney = spendCoins(cost);
@@ -192,15 +205,16 @@ async function pullPack(cost,numberOfPokemon, packType){
         }
     }
 }
+/**
+ * Shows the pack reveal modal with the given pokemon
+ * @param {pokemon} pokemon 
+ * @returns 
+ */
 function showPackReveal(pokemon) {
-    // TODO: Mostra #pack-reveal rimuovendo classe hidden
-    // TODO: Popola #reveal-content con card Pokemon
-    // TODO: Aggiungi animazione di reveal
-    // pokemon: oggetto con dati Pokemon (name, sprite, stats, type)
 
     const packReveal = document.getElementById('pack-reveal');
     const revealContent = document.getElementById('reveal-content');
-    revealContent.innerHTML = ''; // Pulisce contenuto precedente
+    revealContent.innerHTML = ''; 
     const pokemonCard = CreateCard(pokemon);
     revealContent.appendChild(pokemonCard);
     packReveal.classList.remove('hidden');
@@ -212,9 +226,10 @@ function showPackReveal(pokemon) {
 
 }
 
+/**
+ * Closes the pack reveal modal
+ */
 function closePackReveal() {
-    // TODO: Nasconde #pack-reveal aggiungendo classe hidden
-    // TODO: Aggiorna renderInventory() se necessario
     const packReveal = document.getElementById('pack-reveal');
     packReveal.classList.add('hidden');
 
@@ -226,13 +241,10 @@ function closePackReveal() {
 
 
 // ===== INVENTORY =====
-
+/**
+ * Renders the inventory page with all pokemons owned
+ */
 function renderInventory() {
-    // TODO: Svuota #pokemon-grid
-    // TODO: Se gameState.inventory vuoto, mostra messaggio vuoto
-    // TODO: Per ogni Pokemon in inventory, crea card HTML
-    // TODO: Usa template card commentato come riferimento
-    // TODO: Aggiungi classe 'legendary' se Pokemon leggendario
     const emptyPokemonMessage = document.getElementById('empty-message');
     if(gameState.inventory.length == 0){
         emptyPokemonMessage.classList.remove('hidden');
@@ -248,20 +260,21 @@ function renderInventory() {
         });
     }
 }
+/**
+ * Creates an empty message element for the inventory grid
+ * @returns 
+ */
 function createEmptyMessagge(){
     let message = document.createElement("div");
     message.setAttribute('id','empty-message');
     message.classList.add("hidden","empty-message");
     return message;
 }
+/**
+ * Manages selection of a pokemon for battle team
+ * @param {int} pokemonId 
+ */
 export function selectForBattle(pokemonId) {
-    // TODO: Trova Pokemon in gameState.inventory per ID
-    // TODO: Controlla se team ha slot liberi (max 3)
-    // TODO: Se slot libero, aggiungi a gameState.activeTeam
-    // TODO: Aggiorna visualizzazione #active-team
-    // TODO: Se gia nel team, mostra messaggio errore
-    // pokemonId: number/string - ID univoco del Pokemon
-
     let selectedPokemon = gameState.inventory.find(p => p.id == pokemonId);
     if(selectedPokemon) {
         if(gameState.activeTeam.includes(selectedPokemon)) {
@@ -279,20 +292,19 @@ export function selectForBattle(pokemonId) {
     }
     saveGame();
 }
-
+/**
+ * Removes a pokemon from active team by its id
+ * @param {int} pokemonId 
+ */
 export function removeFromTeam(pokemonId) {
-    // TODO: Trova e rimuovi Pokemon da gameState.activeTeam
-    // TODO: Aggiorna visualizzazione #active-team
-    // pokemonId: number/string
     gameState.activeTeam = gameState.activeTeam.filter(p => p.id != pokemonId);
     saveGame();
     renderActiveTeam();
 }
-
+/**
+ * Renders the active team in inventory page
+ */
 function renderActiveTeam() {
-    // TODO: Aggiorna i 3 slot in #active-team
-    // TODO: Per slot vuoti, mostra placeholder
-    // TODO: Per slot pieni, mostra mini-card con pulsante rimuovi
     const activeTeamContainer = document.getElementById('active-team');
     activeTeamContainer.innerHTML = ''; 
     for(let i = 0; i < 3; i++) {
@@ -311,7 +323,9 @@ function renderActiveTeam() {
 
 
 // ===== BATTLE =====
-
+/**
+ * starts the battle state
+ */
 async function startBattle() {
     disableBtnMoves();
     let json = JSON.parse(localStorage.getItem('gameState'));   
@@ -348,16 +362,26 @@ async function startBattle() {
             saveBattleState(state); 
     }
 }
+/**
+ * disables moves buttons
+ */
 function disableBtnMoves(){
     document.querySelectorAll('.move-btn').forEach((button) => {
         button.disabled = true;
     });
 }
+/**
+ * enables moves buttons
+ */
 function enableBtnMoves(){
     document.querySelectorAll('.move-btn').forEach((button) => {
         button.disabled = false;
     });
 }
+/**
+ * renders on screen the sprite, name, current hp and max hp of the player's pokemon
+ * @param {pokemon} pokemon 
+ */
 function renderPLA(pokemon){
     console.log("render pla", pokemon);
     updateHPBar('player-hp-bar', pokemon.currentHP, pokemon.maxHP);
@@ -377,6 +401,10 @@ function renderPLA(pokemon){
     }
     renderMoveButtons(pokemon);
 }
+/**
+ * renders on screen the sprite, name, current hp and max hp of the enemy's pokemon
+ * @param {pokemon} pokemon 
+ */
 function renderCPU(pokemon){
     console.log("render cpu", pokemon);
     updateHPBar('enemy-hp-bar', pokemon.currentHP, pokemon.maxHP);
@@ -390,7 +418,10 @@ function renderCPU(pokemon){
     CPUmaxHP.textContent = pokemon.maxHP;
     CPUimg.src = pokemon.frontSprite;
 }
-
+/**
+ * shows the pokemon's moves names in the buttons dedicated to them
+ * @param {pokemon} pokemon 
+ */
 function renderMoveButtons(pokemon){
     document.querySelectorAll('.move-btn').forEach((button, index) => {
         if(pokemon.moves[index]){
@@ -402,12 +433,16 @@ function renderMoveButtons(pokemon){
         }}
     );
 }
+/**
+ * manages not only the usage of the moves but also the entire battle system
+ * @param {int} moveIndex 
+ */
 async function useMove(moveIndex) {
-    let json = JSON.parse(localStorage.getItem('state'));
+    let state = JSON.parse(localStorage.getItem('state'));
     
     let nDamage = null;
-    let pkmCPU = json.activePokemonCPU;
-    let pkmPLA = json.activePokemonPLA;
+    let pkmCPU = state.activePokemonCPU;
+    let pkmPLA = state.activePokemonPLA;
 
     //Turno player
     nDamage = calculateDMG(pkmPLA, pkmCPU, pkmPLA.moves[moveIndex]);
@@ -416,7 +451,7 @@ async function useMove(moveIndex) {
 
     pkmCPU.currentHP -= nDamage;
 
-    json.enemyTeam.forEach(pokemon => {
+    state.enemyTeam.forEach(pokemon => {
         if(pokemon.id == pkmCPU.id){
             pokemon.currentHP = pkmCPU.currentHP;
         }
@@ -432,15 +467,12 @@ async function useMove(moveIndex) {
             onBattleWin();
         } 
         else {
-            saveBattleState(json);
-            if(json.playerTeam.length < 5){
-                await randomPokemonOnTeam(json);
-            }   
-            saveBattleState(json);
-            console.log("stato dopo possibile aggiunta pokemon 2", json);
-            pkmCPU = json.enemyTeam[switchPokemon(json.enemyTeam, true)];
+            saveBattleState(state);
+            await randomPokemonOnTeam(state);
+            console.log("stato dopo possibile aggiunta pokemon 2", state);
+            pkmCPU = state.enemyTeam[switchPokemon(state.enemyTeam, true)];
             
-            json.activePokemonCPU = pkmCPU;
+            state.activePokemonCPU = pkmCPU;
             renderCPU(pkmCPU);
 
         }
@@ -457,7 +489,7 @@ async function useMove(moveIndex) {
 
         pkmPLA.currentHP -= nDamage;
 
-        json.playerTeam.forEach(pokemon => {
+        state.playerTeam.forEach(pokemon => {
             if(pokemon.id == pkmPLA.id){
                 pokemon.currentHP = pkmPLA.currentHP;
             }
@@ -472,20 +504,23 @@ async function useMove(moveIndex) {
             if (loss){
                 onBattleLose();
             } else {
-                saveBattleState(json);
+                saveBattleState(state);
                 switchPokemon(false,false);
-                json.activePokemonPLA = pkmPLA;
+                state.activePokemonPLA = pkmPLA;
                 renderPLA(pkmPLA);
             }}
 
         //Essendo in un timeout, devo salvare lo stato qui dentro. Fuori viene eseguito prima del timeout
-        console.log("stato dopo i due turni", json);
-        saveBattleState(json);
+        console.log("stato dopo i due turni", state);
+        saveBattleState(state);
         enableBtnMoves();
     }, 1000);
 }
-
-async function randomPokemonOnTeam(json) {
+/**
+ * has 20% chance that a random pokemon gets added to your team after defeating an enemy pokemon
+ * @param {json} state 
+ */
+async function randomPokemonOnTeam(state) { 
     let findRandomPokemonPercentage = 0.20;
     let random = Math.random();
     console.log("random nunmber:", random);
@@ -493,17 +528,26 @@ async function randomPokemonOnTeam(json) {
         let randomPokemon = await createPokemonFromAPIData(await fetchOneRandomPokemon());
         addBattleLog(`${randomPokemon.name} si è aggiunto al team!`);
         console.log("adding pokemon to team:", randomPokemon);
-        json.playerTeam.push(randomPokemon);
-        console.log("battlestate:", json);
+        state.playerTeam.push(randomPokemon);
+        console.log("battlestate:", state);
     }
-    saveBattleState(json);
-    console.log("stato dopo il possibile aggiunta pokemon 1", json);
+    saveBattleState(state);
+    console.log("stato dopo il possibile aggiunta pokemon 1", state);
 }
+/**
+ * checks if the pokemon is dead, you need to pass the pokemon current HP
+ * @param {int} hp 
+ * @returns bool
+ */
 function isFainted(hp){
     return hp <= 0;
 }
-
-function checkWin(attacker, forNum=false){
+/**
+ * checks if all pokemon of the selected team are dead
+ * @param {pokemon} attacker 
+ * @returns bool
+ */
+function checkWin(attacker){
     let counter = 0
     attacker.forEach(pokemon => {
         if (isFainted(pokemon.currentHP)){
@@ -515,7 +559,13 @@ function checkWin(attacker, forNum=false){
     }
     return counter == attacker.length
 }
-
+/**
+ * calculate amount of damage dealt, also checks the STAB and effectiveness of the move
+ * @param {pokemon} attacker 
+ * @param {pokemon} defender 
+ * @param {move} move 
+ * @returns int
+ */
 function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chiesto al chat :)
     let attackStat = move.category.name === "physical"
     ? attacker.attack
@@ -528,7 +578,7 @@ function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chie
     
     let baseDamage = (((2 * attacker.level / 5 + 2) * move.power * attackStat / defenseStat) / 50) + 2;
 
-    // STAB
+    // STAB - same type attack boost
     if (attacker.type.includes(move.type)) {
         baseDamage *= 1.5;
     }
@@ -545,7 +595,20 @@ function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chie
 
     return Math.floor(baseDamage);
 }
-
+/**
+ * returns type effectiveness of the move on the enemy pokemon
+ * 
+ * values returned:
+ * - 0
+ * - 0.25
+ * - 0.5
+ * - 1
+ * - 2
+ * - 4
+ * @param {move} type 
+ * @param {pokemon} defenderType 
+ * @returns int
+ */
 function getTypeEffectiveness(type, defenderType) { // fatto con il chat :) type, defenderTyp
     const TYPE_CHART = {
         "normal": { "rock": 0.5, "ghost": 0, "steel": 0.5 },
@@ -572,12 +635,17 @@ function getTypeEffectiveness(type, defenderType) { // fatto con il chat :) type
     for(let i = 0; i < defenderType.length; i++){
         console.log("Effectivness   ", TYPE_CHART[type][defenderType[i]])
         let effectiveness = TYPE_CHART[type][defenderType[i]];
-        listDmg.push(effectiveness === undefined ? 1 : effectiveness);
+        listDmg.push(effectiveness === undefined ? 1 : effectiveness); // checks if undefined and makes it number 0
     }
     
-    return listDmg.reduce((a, b) => a * b, 1);
+    return listDmg.reduce((a, b) => a * b, 1); //does the avarage of tipings (ex. 2x and 0.5x makes 1x)
 }
-
+/**
+ * updates the visuals for the hp bar of inbattle pokemons
+ * @param {string} elementId 
+ * @param {pokemon} currentHP 
+ * @param {pokemon} maxHP 
+ */
 function updateHPBar(elementId, currentHP, maxHP) {
     console.log("Updating HP Bar:", elementId, currentHP, maxHP);
     let percent = (currentHP / maxHP) * 100;
@@ -602,38 +670,44 @@ function updateHPBar(elementId, currentHP, maxHP) {
     }
 
 }
-
+/**
+ * shows battle log message in battle
+ * @param {string} message 
+ */
 function addBattleLog(message) {
-    // TODO: Aggiungi messaggio a #battle-log
     let log = document.getElementById('battle-log');
     log.innerHTML = ``;
     let p = document.createElement('p');
     p.textContent = message;
     log.appendChild(p);
-    // TODO: Scroll automatico in basso (da capire)
 }
-
+/**
+ * - if cpuFeinted is true, makes the CPU pokemon switch 
+ * - shows switchable pokemons in team during battle
+ * - if nullable is true, hides the possibility to close the switchPokemon page
+ * @param {bool} cpuFeinted 
+ * @param {bool} nullable 
+ * @returns int
+ */
 function switchPokemon(cpuFeinted = false,nullable=true) {
-    let json = JSON.parse(localStorage.getItem('state'));
+    let state = JSON.parse(localStorage.getItem('state'));
 
-    let playerTeam = json.playerTeam
+    let playerTeam = state.playerTeam
 
     if (cpuFeinted){
         let random = 0;
         do {
             random = Math.floor(Math.random() * 6)
-        } while (isFainted(json.enemyTeam[random].currentHP));
+        } while (isFainted(state.enemyTeam[random].currentHP));
         return random
     } 
     else{
-        // TODO: Mostra #switch-modal
         let switchmodal = document.getElementById('switch-modal');
         switchmodal.classList.remove('hidden');
-        // TODO: Popola #switch-pokemon-list con Pokemon disponibili nel team
         let switchPokemonList = document.getElementById('switch-pokemon-list');
         switchPokemonList.innerHTML = "";
         playerTeam.forEach(pokemon => {
-            if(!isFainted(pokemon.currentHP) && pokemon.id != json.activePokemonPLA.id){
+            if(!isFainted(pokemon.currentHP) && pokemon.id != state.activePokemonPLA.id){
                 const pokemonCard = CreateCard(pokemon, false, true);
                 switchPokemonList.appendChild(pokemonCard);
             }
@@ -649,99 +723,72 @@ function switchPokemon(cpuFeinted = false,nullable=true) {
 
     }
 }
-
+/**
+ * makes the player switch pokemon
+ * @param {int} pokemonIndex 
+ */
 export function selectSwitchPokemon(pokemonIndex) {
-    let json = JSON.parse(localStorage.getItem('state'));
+    let state = JSON.parse(localStorage.getItem('state'));
     let switchmodal = document.getElementById('switch-modal');
-    // TODO: Cambia Pokemon attivo in battaglia
-    json.playerTeam.forEach(pokemon => {
+
+    state.playerTeam.forEach(pokemon => {
         if(pokemon.id == pokemonIndex){
-            if (!isFainted(pokemon.currentHP) || pokemon.id == json.activePokemonPLA.id){
-                console.log("boutta change pokemon")
-                json.activePokemonPLA = pokemon;
+            if (!isFainted(pokemon.currentHP) || pokemon.id == state.activePokemonPLA.id){
+                console.log("boutta change pokemon") //gotta love writing debugging messages
+                state.activePokemonPLA = pokemon;
             }else{
                 alert("non puoi selezionare questo pokemon")
             }
         }
     });
-    // TODO: Aggiorna UI
-    renderPLA(json.activePokemonPLA);
-    // TODO: Chiudi modal
-    switchmodal.classList.add('hidden');
-    // TODO: Turno nemico (penalita per switch?)g
-    saveBattleState(json);
-}
 
+    renderPLA(state.activePokemonPLA);
+
+    switchmodal.classList.add('hidden');
+
+    saveBattleState(state);
+}
+/**
+ * closes switch page
+ */
 function closeSwitchModal() {
-    // TODO: Nasconde #switch-modal
     let swichmodal = document.getElementById('switch-modal')
     swichmodal.classList.add('hidden');
 }
-
+/**
+ * shows winning page
+ */
 function onBattleWin() {
     console.log("hai vinto la battaglia");
     let winPage = document.getElementById('victory-banner');
     winPage.classList.remove('hidden');
-    console.log("Elemento banner trovato?", winPage);
+    console.log("Elemento banner trovato?", winPage); //totally useless debugging message imo
     addCoins(100);
     saveGame();
-    // TODO: Aggiungi animazione/suono vittoria
 }
-
+/**
+ * closes victory page
+ */
 function closeVictoryBanner() {
-    // TODO: Nasconde #victory-banner
     let lossPage = document.getElementById('victory-banner')
     lossPage.classList.add('hidden');
-    // TODO: Reset stato battaglia
-    // TODO: Torna al menu
     showPage('page-menu');
 }
-
+/**
+ * shows lose page
+ */
 function onBattleLose() {
     console.log("hai perso la battaglia");
     let lossPage = document.getElementById('defeat-banner');
     lossPage.classList.remove('hidden');
 }
-
-function closeDefeatBanner() {
-    // TODO: Nasconde #defeat-banner
+/**
+ * closes lose page
+ */
+function closeDefeatBanner() { //smh bro why do we calling the losing page in 20 different ways
     let lossPage = document.getElementById('defeat-banner')
     lossPage.classList.add('hidden');
-    // TODO: Reset stato battaglia
-    // TODO: Torna al menu
     showPage('page-menu');
-
-}
-
-
-// ===== UTILITY =====
-
-function generateRandomPokemon(isLegendary) {
-    // TODO: Genera ID Pokemon random
-    // TODO: Se isLegendary, scegli da lista leggendari
-    // TODO: Altrimenti, scegli da Pokemon comuni (1-151)
-    // TODO: Ritorna oggetto Pokemon con stats generate
-    // isLegendary: boolean
-    // return: oggetto Pokemon
-}
-
-function fetchPokemonData(pokemonId) {
-    // TODO: Chiama PokeAPI per ottenere dati Pokemon
-    // TODO: Ritorna Promise con dati formattati
-    // pokemonId: number
-    // return: Promise<Pokemon>
-}
-
-function getTypeColor(type) {
-    // TODO: Ritorna classe CSS per tipo Pokemon
-    // type: string (fire, water, grass, etc.)
-    // return: string (es: 'type-fire')
-}
-
-
-// TODO: Funzione per acquistare monete 
-function buyCoins(packType) {
-    
 }
 
 

@@ -1,6 +1,3 @@
-/*
-TODO:Crea una classe pokemon con nome, livello, vita, tipo, lista di mosse(che contiene il nome e i danni della mossa).
-*/ 
 import { removeFromTeam, selectForBattle, selectSwitchPokemon } from './functions.js';
 class pokemon {
     constructor(id,name, type, level, health, defense, attack, specialAttack, specialDefense, speed, moves, frontSprite, backSprite) {
@@ -28,7 +25,14 @@ class pokemon {
 
 }
 
-
+/**
+ * Creates a mini card element for a pokemon
+ * If isEmpty is true, creates an empty slot card
+ * @param {pokemon} pokemon 
+ * @param {boolean} isEmpty 
+ * @param {int} dataSlot 
+ * @returns 
+ */
 export function CreateMiniCard(pokemon,isEmpty=false,dataSlot=0) {
     if(!isEmpty){
     let card = document.createElement('div');
@@ -68,6 +72,13 @@ export function CreateMiniCard(pokemon,isEmpty=false,dataSlot=0) {
         return emptyCard;
     }
 }
+/**
+ * Creates a detailed card element for a pokemon
+ * @param {pokemon} pokemon 
+ * @param {boolean} isForTeam 
+ * @param {boolean} isForBattle 
+ * @returns 
+ */
 export function CreateCard(pokemon, isForTeam=false, isForBattle=false) {
     let card = document.createElement('div');
     card.classList.add('pokemon-card-show');
@@ -137,7 +148,12 @@ export function CreateCard(pokemon, isForTeam=false, isForBattle=false) {
 
     return card;
 }
-
+/**
+ * Creates a div element for a single stat
+ * @param {string} labelText 
+ * @param {*} value 
+ * @returns 
+ */
 function createDivStats(labelText, value) {
     let statdiv = document.createElement('div');
     statdiv.classList.add('stat');
