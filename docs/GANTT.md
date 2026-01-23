@@ -2,14 +2,14 @@
 
 Ecco il diagramma di Gantt del nostro progetto:
 
-<div class="mermaid">
+```mermaid
 gantt
     title Progetto: Pokemon Battle Sim
     dateFormat  YYYY-MM-DD
     axisFormat  %d/%m
     
     section Setup Iniziale
-    Setup Repo (Tutti)      :t1, 2025-12-27, 2d
+    Setup Repo (Tutti)            :t1, 2025-12-27, 2d
     Studio API Esterne (Jerome)   :t2, 2025-12-27, 2d
     
     section Data Fetching
@@ -17,23 +17,27 @@ gantt
     Struttura UI Base (Fra)       :t4, 2025-12-29, 2d
 
     section Battle System
-    Battle Logic e Arena Pt.1 (Jerome+Fra) :crit, t5, 2026-01-02, 4d
-    Battle Logic e Arena Pt.2 (Jerome+Fra) :crit, t6, 2026-01-07, 12d
+    Battle Logic e Arena Pt.1 (Jerome e Fra) :crit, t5, 2026-01-02, 4d
+    Battle Logic e Arena Pt.2 (Jerome e Fra) :crit, t6, 2026-01-07, 12d
 
     section Diego (Shop e Docs)
-    Logica Negozio Gacha (Diego)  :t7, 2026-01-04, 2d
+    Logica Negozio Gacha (Diego)   :t7, 2026-01-04, 2d
     Implementazione UI Shop (Diego):t8, 2026-01-07, 5d
-    Documentazione Tecnica (Diego):t9, 2026-01-13, 6d
+    Documentazione Tecnica (Diego) :t9, 2026-01-13, 6d
     
     section Chiusura Progetto
-    Integrazione Shop (Team):t10, 2026-01-20, 3d
+    Integrazione Shop (Team)     :t10, 2026-01-20, 3d
     Final Polish e Deploy (Team)  :t11, 2026-01-23, 2d
-</div>
+```
 
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ 
-    startOnLoad: true,
-    theme: 'default'
-  });
+<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true }); // Questo pezzetto serve per far capire a JSDoc che deve renderizzare il blocco sopra
+setTimeout(() => { document.querySelectorAll('pre code.language-mermaid').forEach((el) => { const graphDefinition = el.innerText;
+const container = document.createElement('div');
+container.className = 'mermaid';
+container.textContent = graphDefinition;
+el.parentNode.replaceWith(container);
+mermaid.run();
+});
+}, 500);
 </script>
