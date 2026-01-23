@@ -287,7 +287,8 @@ function renderActiveTeam() {
 // ===== BATTLE =====
 
 async function startBattle() {
-    let json = JSON.parse(localStorage.getItem('gameState'));   
+    let json = JSON.parse(localStorage.getItem('gameState')); 
+      
     let state = {
         'playerTeam' : [],
         'enemyTeam' : [],
@@ -375,11 +376,11 @@ function renderMoveButtons(pokemon){
     );
 }
 async function useMove(moveIndex) {
-    let json = JSON.parse(localStorage.getItem('state'));
+    let state = JSON.parse(localStorage.getItem('state'));
     
     let nDamage = null;
-    let pkmCPU = json.activePokemonCPU;
-    let pkmPLA = json.activePokemonPLA;
+    let pkmCPU = state.activePokemonCPU;
+    let pkmPLA = state.activePokemonPLA;
 
     //Turno player
     nDamage = calculateDMG(pkmPLA, pkmCPU, pkmPLA.moves[moveIndex]);
@@ -388,7 +389,7 @@ async function useMove(moveIndex) {
 
     pkmCPU.currentHP -= nDamage;
 
-    json.enemyTeam.forEach(pokemon => {
+    state.enemyTeam.forEach(pokemon => {
         if(pokemon.id == pkmCPU.id){
             pokemon.currentHP = pkmCPU.currentHP;
         }
@@ -399,17 +400,17 @@ async function useMove(moveIndex) {
     if (isFainted(pkmCPU.currentHP)){
         console.log("pokemon cpu fainted", pkmCPU);
         addBattleLog(`${pkmCPU.name} è stato sconfitto!`);
-        let win = checkWin(json.enemyTeam);
+        let win = checkWin(state.enemyTeam);
         if (win){
             onBattleWin();
         } 
         else {
-            saveBattleState(json);
-            await randomPokemonOnTeam(json);
-            console.log("stato dopo possibile aggiunta pokemon 2", json);
-            pkmCPU = json.enemyTeam[switchPokemon(json.enemyTeam, true)];
+            saveBattleState(state);
+            await randomPokemonOnTeam(state);
+            console.log("stato dopo possibile aggiunta pokemon 2", state);
+            pkmCPU = state.enemyTeam[switchPokemon(state.enemyTeam, true)];
             
-            json.activePokemonCPU = pkmCPU;
+            state.activePokemonCPU = pkmCPU;
             renderCPU(pkmCPU);
         }
         
@@ -425,7 +426,7 @@ async function useMove(moveIndex) {
 
         pkmPLA.currentHP -= nDamage;
 
-        json.playerTeam.forEach(pokemon => {
+        state.playerTeam.forEach(pokemon => {
             if(pokemon.id == pkmPLA.id){
                 pokemon.currentHP = pkmPLA.currentHP;
             }
@@ -435,25 +436,25 @@ async function useMove(moveIndex) {
 
         if (isFainted(pkmPLA.currentHP)){
             addBattleLog(`${pkmCPU.name} è stato sconfitto!`);
-            let loss = checkWin(json.playerTeam);
+            let loss = checkWin(state.playerTeam);
             console.log("loss condition", loss);
             if (loss){
                 onBattleLose();
             } else {
-                saveBattleState(json);
+                saveBattleState(state);
                 switchPokemon(false,false);
-                json.activePokemonPLA = pkmPLA;
+                state.activePokemonPLA = pkmPLA;
                 renderPLA(pkmPLA);
             }}
 
         //Essendo in un timeout, devo salvare lo stato qui dentro. Fuori viene eseguito prima del timeout
-        console.log("stato dopo i due turni", json);
-        saveBattleState(json);
+        console.log("stato dopo i due turni", state);
+        saveBattleState(state);
         enableBtnMoves();
     }, 1000);
 }
 
-async function randomPokemonOnTeam(json) {
+async function randomPokemonOnTeam(json) { 
     let findRandomPokemonPercentage = 0.20;
     let random = Math.random();
     console.log("random nunmber:", random);
@@ -493,7 +494,7 @@ function calculateDMG(attacker, defender, move){ // per il calcolo danni ho chie
     
     let baseDamage = (((2 * attacker.level / 5 + 2) * move.power * attackStat / defenseStat) / 50) + 2;
 
-    // STAB
+    // STAB - same type attack boost
     if (attacker.type.includes(move.type)) {
         baseDamage *= 1.5;
     }
@@ -537,10 +538,10 @@ function getTypeEffectiveness(type, defenderType) { // fatto con il chat :) type
     for(let i = 0; i < defenderType.length; i++){
         console.log("Effectivness   ", TYPE_CHART[type][defenderType[i]])
         let effectiveness = TYPE_CHART[type][defenderType[i]];
-        listDmg.push(effectiveness === undefined ? 1 : effectiveness);
+        listDmg.push(effectiveness === undefined ? 1 : effectiveness); // checks if undefined and makes it number 0
     }
     
-    return listDmg.reduce((a, b) => a * b, 1);
+    return listDmg.reduce((a, b) => a * b, 1); //does the avarage of tipings (ex. 2x and 0.5x makes 1x)
 }
 
 function updateHPBar(elementId, currentHP, maxHP) {
@@ -569,36 +570,32 @@ function updateHPBar(elementId, currentHP, maxHP) {
 }
 
 function addBattleLog(message) {
-    // TODO: Aggiungi messaggio a #battle-log
     let log = document.getElementById('battle-log');
     log.innerHTML = ``;
     let p = document.createElement('p');
     p.textContent = message;
     log.appendChild(p);
-    // TODO: Scroll automatico in basso (da capire)
 }
 
 function switchPokemon(cpuFeinted = false,nullable=true) {
-    let json = JSON.parse(localStorage.getItem('state'));
+    let state = JSON.parse(localStorage.getItem('state'));
 
-    let playerTeam = json.playerTeam
+    let playerTeam = state.playerTeam
 
     if (cpuFeinted){
         let random = 0;
         do {
             random = Math.floor(Math.random() * 6)
-        } while (isFainted(json.enemyTeam[random].currentHP));
+        } while (isFainted(state.enemyTeam[random].currentHP));
         return random
     } 
     else{
-        // TODO: Mostra #switch-modal
         let switchmodal = document.getElementById('switch-modal');
         switchmodal.classList.remove('hidden');
-        // TODO: Popola #switch-pokemon-list con Pokemon disponibili nel team
         let switchPokemonList = document.getElementById('switch-pokemon-list');
         switchPokemonList.innerHTML = "";
         playerTeam.forEach(pokemon => {
-            if(!isFainted(pokemon.currentHP) && pokemon.id != json.activePokemonPLA.id){
+            if(!isFainted(pokemon.currentHP) && pokemon.id != state.activePokemonPLA.id){
                 const pokemonCard = CreateCard(pokemon, false, true);
                 switchPokemonList.appendChild(pokemonCard);
             }
@@ -616,29 +613,28 @@ function switchPokemon(cpuFeinted = false,nullable=true) {
 }
 
 export function selectSwitchPokemon(pokemonIndex) {
-    let json = JSON.parse(localStorage.getItem('state'));
+    let state = JSON.parse(localStorage.getItem('state'));
     let switchmodal = document.getElementById('switch-modal');
-    // TODO: Cambia Pokemon attivo in battaglia
-    json.playerTeam.forEach(pokemon => {
+
+    state.playerTeam.forEach(pokemon => {
         if(pokemon.id == pokemonIndex){
-            if (!isFainted(pokemon.currentHP) || pokemon.id == json.activePokemonPLA.id){
+            if (!isFainted(pokemon.currentHP) || pokemon.id == state.activePokemonPLA.id){
                 console.log("boutta change pokemon")
-                json.activePokemonPLA = pokemon;
+                state.activePokemonPLA = pokemon;
             }else{
                 alert("non puoi selezionare questo pokemon")
             }
         }
     });
-    // TODO: Aggiorna UI
-    renderPLA(json.activePokemonPLA);
-    // TODO: Chiudi modal
+
+    renderPLA(state.activePokemonPLA);
+
     switchmodal.classList.add('hidden');
-    // TODO: Turno nemico (penalita per switch?)g
-    saveBattleState(json);
+
+    saveBattleState(state);
 }
 
 function closeSwitchModal() {
-    // TODO: Nasconde #switch-modal
     let swichmodal = document.getElementById('switch-modal')
     swichmodal.classList.add('hidden');
 }
@@ -650,15 +646,11 @@ function onBattleWin() {
     console.log("Elemento banner trovato?", winPage);
     addCoins(100);
     saveGame();
-    // TODO: Aggiungi animazione/suono vittoria
 }
 
 function closeVictoryBanner() {
-    // TODO: Nasconde #victory-banner
     let lossPage = document.getElementById('victory-banner')
     lossPage.classList.add('hidden');
-    // TODO: Reset stato battaglia
-    // TODO: Torna al menu
     showPage('page-menu');
 }
 
@@ -669,39 +661,11 @@ function onBattleLose() {
 }
 
 function closeDefeatBanner() {
-    // TODO: Nasconde #defeat-banner
     let lossPage = document.getElementById('defeat-banner')
     lossPage.classList.add('hidden');
-    // TODO: Reset stato battaglia
-    // TODO: Torna al menu
     showPage('page-menu');
-
 }
 
-
-// ===== UTILITY =====
-
-function generateRandomPokemon(isLegendary) {
-    // TODO: Genera ID Pokemon random
-    // TODO: Se isLegendary, scegli da lista leggendari
-    // TODO: Altrimenti, scegli da Pokemon comuni (1-151)
-    // TODO: Ritorna oggetto Pokemon con stats generate
-    // isLegendary: boolean
-    // return: oggetto Pokemon
-}
-
-function fetchPokemonData(pokemonId) {
-    // TODO: Chiama PokeAPI per ottenere dati Pokemon
-    // TODO: Ritorna Promise con dati formattati
-    // pokemonId: number
-    // return: Promise<Pokemon>
-}
-
-function getTypeColor(type) {
-    // TODO: Ritorna classe CSS per tipo Pokemon
-    // type: string (fire, water, grass, etc.)
-    // return: string (es: 'type-fire')
-}
 
 // ===== ESPONE LE FUNZIONI A LIVELLO GLOBALE  =====
 window.showPage = showPage;
