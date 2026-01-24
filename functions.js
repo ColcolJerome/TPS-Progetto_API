@@ -1,4 +1,3 @@
-javascript
 import { fetchPackOfPokemon } from './pullPokemon.mjs';
 import { fetchOneRandomPokemon } from './pullPokemon.mjs';
 import { createPokemonFromAPIData } from './pullPokemon.mjs';
