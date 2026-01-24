@@ -1,0 +1,29 @@
+{
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "source": {
+        "include": ["."],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "exclude": ["node_modules", "docs-output", ".git", ".github", "docs"]
+    },
+    "opts": {
+        "readme": "docs/homepage.md",
+	"tutorials": "./docs",
+        "destination": "./docs-output",
+        "recurse": true
+    },
+    "markdown": {
+        "hardwrap": false,
+        "idInHeadings": true
+    },
+    "templates": {
+        "default": {
+			"staticFiles": {
+                "include": ["docs/mermaid-fix.js"]
+            },
+            "useLongnameInNav": false,
+            "showInherited": true
+        }
+    }
+}
