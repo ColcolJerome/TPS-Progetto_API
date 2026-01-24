@@ -16,40 +16,19 @@ jobs:
         with:
           root_file: docs/rendicontazione.tex
 
-<<<<<<< HEAD
       - name: Verifica e sposta PDF in docs
-=======
-      - name: Sposta PDF in /docs
-        run: |
-          # Il PDF viene generato nella root, lo spostiamo in /docs
-          if [ -f "rendicontazione.pdf" ]; then
-            mv rendicontazione.pdf docs/rendicontazione.pdf
-            echo "PDF spostato in docs/"
-          else
-            echo "ERRORE: PDF non trovato!"
-            exit 1
-          fi
-
-      - name: Salva il PDF nel repository
->>>>>>> c9de1b1af1c65dfdde147ad8dd0e6fe486297861
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-<<<<<<< HEAD
-          # 1. Se il compilatore ha messo il PDF nella root, lo spostiamo dentro docs
+          # Se il compilatore ha messo il PDF nella root, lo spostiamo dentro docs
           if [ -f "rendicontazione.pdf" ]; then
             mv rendicontazione.pdf docs/rendicontazione.pdf
           fi
           
-          # 2. Se invece è già in docs, non facciamo nulla, lo aggiungiamo e basta
-          # Usiamo -f per forzare l'aggiunta se fosse nel .gitignore
+          # Aggiunge il file (anche se ignorato dal .gitignore)
           git add -f docs/rendicontazione.pdf
           
-          # 3. Commit e Push
+          # Commit e Push
           git commit -m "Aggiornamento automatico PDF in docs" || echo "Nessuna modifica"
-=======
-          git add docs/rendicontazione.pdf
-          git commit -m "Aggiornamento automatico PDF" || echo "Nessuna modifica"
->>>>>>> c9de1b1af1c65dfdde147ad8dd0e6fe486297861
           git push
