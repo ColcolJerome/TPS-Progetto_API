@@ -1,16 +1,4 @@
-Ecco il codice corretto.
-
-I principali errori che JSDoc segnalava erano dovuti all'uso di **tipi non standard** per JavaScript. Ecco le correzioni apportate:
-
-1.  **`int` / `float` → `number`**: In JavaScript non esiste la distinzione tra interi e decimali nei tipi, si usa sempre `number`.
-2.  **`bool` → `boolean`**: Il tipo corretto è `boolean`.
-3.  **`json` → `Object`**: JSON è una stringa, l'oggetto in memoria è un `Object`.
-4.  **Errori di logica nei parametri**: In `updateHPBar`, i parametri `currentHP` e `maxHP` erano indicati come tipo `{pokemon}` (oggetto), ma sono in realtà numeri.
-5.  **Array**: Dove passavi una lista (es. `defenderType`), ho specificato `Array` o `string[]`.
-
-Ecco il codice completo corretto:
-
-```javascript
+javascript
 import { fetchPackOfPokemon } from './pullPokemon.mjs';
 import { fetchOneRandomPokemon } from './pullPokemon.mjs';
 import { createPokemonFromAPIData } from './pullPokemon.mjs';
@@ -813,4 +801,3 @@ window.closePackReveal = closePackReveal;
 window.closeVictoryBanner = closeVictoryBanner;
 window.closeDefeatBanner = closeDefeatBanner;
 window.closeSwitchModal = closeSwitchModal;
-```
